@@ -13,6 +13,7 @@ Neste desafio você deverá criar, utilizando **BootStrap** e **PHP/Laravel** , 
   * [ ] Como usuário quero poder alterar a descrição de uma tarefa.
   * [ ] Como usuário quero poder excluir uma tarefa.
   * [ ] Como usuário quero poder ver um relatório das minhas tarefas por status.  
+  * [ ] Como usuário quero poder fazer logoff do sistema.
   
 * Backend
   * [ ] Todas operações do front devem ser suportadas via API :smile:
