@@ -31,4 +31,5 @@ Neste desafio você deverá criar, utilizando **BootStrap** e **PHP/Laravel** , 
 * [ ] Componentização
 * [ ] Features 100% funcionais
 * [ ] Design/Layout da aplicação
+* [ ] Tratamentos de erros
 * [ ] Testes Unitários é um bônus
