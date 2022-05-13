@@ -24,6 +24,7 @@ Neste desafio você deverá criar, utilizando **BootStrap** e **PHP/Laravel** , 
   * [ ] Design/Layout livre
   * [ ] Utilizar Git, disponibilize a sua solução no github com um readme descrevendo como executar seu projeto :)
   * [ ] Disponibilizar o projeto ~~na AWS~~ em alguma Cloud é um bônus.
+  * [ ] Disponibilizar o projeto em ambiente Docker (docker-composer) é um bônus.
 
 ## :green_heart: Critérios de avaliação
 
