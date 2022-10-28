@@ -1,6 +1,6 @@
 ## :FleetDesk_Full_Stack: Sobre o desafio
 
-Neste desafio você deverá criar, utilizando **BootStrap** e **PHP/Laravel** , uma lista de tarefas :scroll:.
+Neste desafio você deverá criar, utilizando **ReactJS** e **PHP/Laravel** , uma lista de tarefas :scroll:.
 
 ## :heavy_check_mark: Requisitos
 
