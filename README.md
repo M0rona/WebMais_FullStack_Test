@@ -14,8 +14,9 @@ O escopo foi pensado para caber em **um dia de trabalho (6 a 8h)**. Não precisa
 
 * Frontend
   * [ ] Login (pode usar usuário/senha fixos ou um cadastro simples)
+  * [ ] Cadastrar cliente (nome e documento) para vincular aos contratos
   * [ ] Listar contratos (número, cliente, valor, vencimento, status)
-  * [ ] Cadastrar novo contrato
+  * [ ] Cadastrar novo contrato, selecionando o cliente
   * [ ] Editar um contrato
   * [ ] Excluir um contrato
   * [ ] Encerrar um contrato manualmente, com feedback visual da mudança
@@ -25,7 +26,7 @@ O escopo foi pensado para caber em **um dia de trabalho (6 a 8h)**. Não precisa
 * Backend
   * [ ] Todas as operações do front expostas via API REST
   * [ ] Autenticação via Token JWT
-  * [ ] Persistência em PostgreSQL
+  * [ ] Persistência em PostgreSQL, com contrato relacionado a um cliente
   * [ ] Cache em Redis para a listagem de contratos (ou para o resumo por status)
   * [ ] Job assíncrono com BullMQ: ao vencer a data de um contrato, atualizar seu status automaticamente para "Vencido" (pode ser um job periódico ou disparado no cadastro/consulta)
 
@@ -43,11 +44,14 @@ O escopo foi pensado para caber em **um dia de trabalho (6 a 8h)**. Não precisa
 * [ ] Pipeline de CI simples (lint/test no GitHub Actions)
 * [ ] Uso de RabbitMQ/Kafka no lugar do BullMQ
 * [ ] Domínio de negócio mais rico (múltiplos tipos de contrato, fluxo de aprovação, dados financeiros)
+* [ ] Editar/excluir cliente
+* [ ] Itens do contrato (múltiplos itens/produtos por contrato, com valor total calculado a partir da soma dos itens)
 
 ## :green_heart: Critérios de avaliação
 
 * [ ] Qualidade de código (Clean Code, SOLID)
 * [ ] Organização e estrutura do projeto
+* [ ] Modelagem do banco de dados (schema, relacionamentos, tipos)
 * [ ] Uso correto de PostgreSQL, Redis e BullMQ
 * [ ] Features funcionais conforme requisitos mínimos
 * [ ] Tratamento de erros
