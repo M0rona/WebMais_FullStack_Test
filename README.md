@@ -1,37 +1,55 @@
-## :FleetDesk_Full_Stack: Sobre o desafio
+## :WebMais_Full_Stack: Sobre o desafio
 
-Neste desafio você deverá criar, utilizando **ReactJS** e **PHP/Laravel** , uma lista de tarefas :scroll:.
+Neste desafio você vai construir uma versão simplificada de um módulo de **Gestão de Contratos**: cadastro de contratos com controle de status (Ativo / Vencido / Encerrado) :scroll:.
 
-## :heavy_check_mark: Requisitos
+Stack obrigatória:
+* Backend: **Node.js + TypeScript**, API REST
+* Frontend: **React + Vite**
+* Banco: **PostgreSQL**
+* **Redis** (cache) e **BullMQ** (processamento assíncrono)
 
-* Frontend  
-  * [ ] Como usuário quero pode ver todas as minhas tarefas, por meio do meu login e senha.
-  * [ ] Como usuário quero poder identificar quais tarefas ainda não concluí.
-  * [ ] Como usuário quero poder ver quais tarefas eu já concluí.
-  * [ ] Como usuário quero poder marcar uma tarefa concluída e ter um feedback visual dessa mudança.
-  * [ ] Como usuário quero poder cadastrar novas tarefas.
-  * [ ] Como usuário quero poder alterar a descrição de uma tarefa.
-  * [ ] Como usuário quero poder excluir uma tarefa.
-  * [ ] Como usuário quero poder ver um relatório das minhas tarefas por status.  
-  * [ ] Como usuário quero poder fazer logoff do sistema.
-  
+O escopo foi pensado para caber em **um dia de trabalho (6 a 8h)**. Não precisa de tela bonita nem cobrir todo caso de borda — priorize um fluxo funcional e código limpo.
+
+## :heavy_check_mark: Requisitos mínimos
+
+* Frontend
+  * [ ] Login (pode usar usuário/senha fixos ou um cadastro simples)
+  * [ ] Listar contratos (número, cliente, valor, vencimento, status)
+  * [ ] Cadastrar novo contrato
+  * [ ] Editar um contrato
+  * [ ] Excluir um contrato
+  * [ ] Encerrar um contrato manualmente, com feedback visual da mudança
+  * [ ] Ver um resumo/contagem de contratos por status (Ativos / Vencidos / Encerrados)
+  * [ ] Logoff
+
 * Backend
-  * [ ] Todas operações do front devem ser suportadas via API :smile:
-  * [ ] Utilizar Autenticação por meio de um Token JWT.
-  * [ ] As tarefas deverão ser persistidas em algum database. (A critério do candidato).
+  * [ ] Todas as operações do front expostas via API REST
+  * [ ] Autenticação via Token JWT
+  * [ ] Persistência em PostgreSQL
+  * [ ] Cache em Redis para a listagem de contratos (ou para o resumo por status)
+  * [ ] Job assíncrono com BullMQ: ao vencer a data de um contrato, atualizar seu status automaticamente para "Vencido" (pode ser um job periódico ou disparado no cadastro/consulta)
 
 * Geral
-  * [ ] Design/Layout livre
-  * [ ] Utilizar Git, disponibilize a sua solução no github com um readme descrevendo como executar seu projeto :)
-  * [ ] Disponibilizar o projeto ~~na AWS~~ em alguma Cloud é um bônus.
-  * [ ] Disponibilizar o projeto em ambiente Docker (docker-compose) é um bônus.
+  * [ ] Git com histórico de commits organizado
+  * [ ] `docker-compose` subindo Postgres e Redis
+  * [ ] README explicando como rodar o projeto
+  * [ ] Relatar no README se/onde usou ferramentas de IA (Claude Code, Copilot, etc.) durante o desenvolvimento — não é demérito, queremos entender como você usa essas ferramentas
+
+## :sparkles: Diferenciais (bônus, não obrigatório)
+
+* [ ] Dockerfile da aplicação (além do docker-compose de infra)
+* [ ] Deploy em alguma cloud
+* [ ] Testes automatizados
+* [ ] Pipeline de CI simples (lint/test no GitHub Actions)
+* [ ] Uso de RabbitMQ/Kafka no lugar do BullMQ
+* [ ] Domínio de negócio mais rico (múltiplos tipos de contrato, fluxo de aprovação, dados financeiros)
 
 ## :green_heart: Critérios de avaliação
 
-* [ ] Qualidade de código
+* [ ] Qualidade de código (Clean Code, SOLID)
 * [ ] Organização e estrutura do projeto
-* [ ] Componentização
-* [ ] Features 100% funcionais
-* [ ] Design/Layout da aplicação
-* [ ] Tratamentos de erros
-* [ ] Testes Unitários é um bônus
+* [ ] Uso correto de PostgreSQL, Redis e BullMQ
+* [ ] Features funcionais conforme requisitos mínimos
+* [ ] Tratamento de erros
+* [ ] Boas práticas de Git
+* [ ] Uso de ferramentas de IA no processo de desenvolvimento
