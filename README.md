@@ -35,6 +35,7 @@ O escopo foi pensado para caber em **um dia de trabalho (6 a 8h)**. Não precisa
   * [ ] `docker-compose` subindo Postgres e Redis
   * [ ] README explicando como rodar o projeto
   * [ ] Relatar no README se/onde usou ferramentas de IA (Claude Code, Copilot, etc.) durante o desenvolvimento — não é demérito, queremos entender como você usa essas ferramentas
+  * [ ] Subir o projeto no github e encaminhar o link do repositóiro para o contato do RH da WebMais (Em até 5 dias)
 
 ## :sparkles: Diferenciais (bônus, não obrigatório)
 
