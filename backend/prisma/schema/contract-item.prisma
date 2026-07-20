@@ -1,0 +1,15 @@
+model ContractItem {
+  id          String   @id @default(uuid())
+  description String
+  quantity    Decimal  @db.Decimal(10, 2)
+  unitValue   Decimal  @db.Decimal(12, 2) @map("unit_value")
+  subtotal    Decimal  @db.Decimal(12, 2)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  contractId String   @map("contract_id")
+  contract   Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@index([contractId])
+  @@map("contract_items")
+}
