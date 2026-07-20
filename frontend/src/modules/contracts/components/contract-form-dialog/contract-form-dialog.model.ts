@@ -1,12 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import type { Contract } from '@/common/types/contract.type';
 import { getErrorMessage } from '@/common/utils/error-handler';
 import { contractSchema, type ContractFormData } from '@/modules/contracts/schemas/contract.schema';
-import { clientService } from '@/modules/clients/services/client.service';
 import { contractService } from '../../services/contract.service';
 
 interface ContractFormDialogProps {
@@ -17,12 +16,6 @@ export const useContractFormDialogModel = ({ contract }: ContractFormDialogProps
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
   const isEditing = !!contract;
-
-  const { data: clients = [] } = useQuery({
-    queryKey: ['clients'],
-    queryFn: clientService.findAll,
-    enabled: open,
-  });
 
   const form = useForm<ContractFormData>({
     resolver: zodResolver(contractSchema),
@@ -95,7 +88,7 @@ export const useContractFormDialogModel = ({ contract }: ContractFormDialogProps
 
   const onSubmit = form.handleSubmit((data) => mutation.mutate(data));
 
-  return { open, setOpen, form, onSubmit, isEditing, isSubmitting: mutation.isPending, clients };
+  return { open, setOpen, form, onSubmit, isEditing, isSubmitting: mutation.isPending };
 };
 
 export type ContractFormDialogModel = ReturnType<typeof useContractFormDialogModel>;

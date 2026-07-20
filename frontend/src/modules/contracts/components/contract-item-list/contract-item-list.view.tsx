@@ -1,13 +1,15 @@
 import { Trash2 } from 'lucide-react';
-import type { FieldErrors, UseFormRegister } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import type { Control, FieldErrors, UseFormRegister } from 'react-hook-form';
+import { Button } from '@/common/components/button';
+import { InputField } from '@/common/components/input-field';
+import { NumberField } from '@/common/components/number-field';
 import { Label } from '@/components/ui/label';
 import { formatCurrency } from '@/common/utils/formatters';
 import type { ContractFormData } from '@/modules/contracts/schemas/contract.schema';
 import type { ContractItemListModel } from './contract-item-list.model';
 
 type ContractItemListViewProps = ContractItemListModel & {
+  control: Control<ContractFormData>;
   register: UseFormRegister<ContractFormData>;
   errors?: FieldErrors<ContractFormData>['items'];
 };
@@ -18,6 +20,7 @@ export const ContractItemListView = ({
   total,
   onAddItem,
   onRemoveItem,
+  control,
   register,
   errors,
 }: ContractItemListViewProps) => {
@@ -39,42 +42,50 @@ export const ContractItemListView = ({
           const subtotal = quantity * unitValue;
 
           return (
-            <div key={field.id} className="grid grid-cols-12 items-start gap-2 rounded-md border p-3">
-              <div className="col-span-5 space-y-1">
-                <Input placeholder="Descrição" {...register(`items.${index}.description`)} />
-                {errors?.[index]?.description && (
-                  <p className="text-xs text-destructive">{errors[index]?.description?.message}</p>
-                )}
-              </div>
-              <div className="col-span-2 space-y-1">
-                <Input
-                  type="number"
-                  step="1"
-                  placeholder="Qtd."
-                  {...register(`items.${index}.quantity`, { valueAsNumber: true })}
+            <div key={field.id} className="space-y-3 rounded-md border p-3">
+              <InputField
+                label="Descrição"
+                required
+                placeholder="Descrição do item"
+                error={errors?.[index]?.description?.message}
+                {...register(`items.${index}.description`)}
+              />
+
+              <div className="grid grid-cols-4 gap-2">
+                <NumberField
+                  control={control}
+                  name={`items.${index}.quantity`}
+                  label="Quantidade"
+                  required
+                  placeholder="0"
+                  error={errors?.[index]?.quantity?.message}
                 />
-              </div>
-              <div className="col-span-2 space-y-1">
-                <Input
-                  type="number"
-                  step="0.01"
-                  placeholder="Valor unit."
-                  {...register(`items.${index}.unitValue`, { valueAsNumber: true })}
+                <NumberField
+                  control={control}
+                  name={`items.${index}.unitValue`}
+                  label="Valor unitário"
+                  required
+                  placeholder="0,00"
+                  error={errors?.[index]?.unitValue?.message}
                 />
-              </div>
-              <div className="col-span-2 flex h-9 items-center text-sm text-muted-foreground">
-                {formatCurrency(subtotal)}
-              </div>
-              <div className="col-span-1 flex justify-end">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onRemoveItem(index)}
-                  disabled={fields.length === 1}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <div className="space-y-2">
+                  <Label>Total</Label>
+                  <div className="flex h-8 items-center text-sm text-muted-foreground">
+                    {formatCurrency(subtotal)}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label className="invisible">Ações</Label>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onRemoveItem(index)}
+                    disabled={fields.length === 1}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
           );

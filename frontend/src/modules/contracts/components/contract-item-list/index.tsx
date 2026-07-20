@@ -11,7 +11,7 @@ interface ContractItemListProps {
 
 const ContractItemList = ({ control, register, errors }: ContractItemListProps) => {
   const model = useContractItemListModel({ control });
-  return <ContractItemListView {...model} register={register} errors={errors} />;
+  return <ContractItemListView {...model} control={control} register={register} errors={errors} />;
 };
 
 export default ContractItemList;

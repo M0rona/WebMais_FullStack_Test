@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Controller } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/common/components/button';
+import { InputField } from '@/common/components/input-field';
 import {
   Dialog,
   DialogContent,
@@ -9,7 +10,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { CONTRACT_TYPE_LABELS } from '@/common/constants';
+import ClientPickerDialog from '../client-picker-dialog';
 import ContractItemList from '../contract-item-list';
 import type { ContractFormDialogModel } from './contract-form-dialog.model';
 
@@ -34,7 +35,6 @@ export const ContractFormDialogView = ({
   onSubmit,
   isEditing,
   isSubmitting,
-  clients,
 }: ContractFormDialogViewProps) => {
   const {
     register,
@@ -45,30 +45,19 @@ export const ContractFormDialogView = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="flex max-h-[85vh] max-w-3xl flex-col">
         <DialogHeader>
           <DialogTitle>{isEditing ? 'Editar contrato' : 'Novo contrato'}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+        <form onSubmit={onSubmit} className="flex min-h-0 flex-1 flex-col gap-4">
+          <div className="grid shrink-0 grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Cliente</Label>
               <Controller
                 control={control}
                 name="clientId"
                 render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione um cliente" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {clients.map((client) => (
-                        <SelectItem key={client.id} value={client.id}>
-                          {client.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <ClientPickerDialog value={field.value} onChange={field.onChange} />
                 )}
               />
               {errors.clientId && <p className="text-sm text-destructive">{errors.clientId.message}</p>}
@@ -81,7 +70,7 @@ export const ContractFormDialogView = ({
                 name="type"
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -97,17 +86,23 @@ export const ContractFormDialogView = ({
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="dueDate">Vencimento</Label>
-            <Input id="dueDate" type="date" {...register('dueDate')} />
-            {errors.dueDate && <p className="text-sm text-destructive">{errors.dueDate.message}</p>}
+          <div className="shrink-0">
+            <InputField
+              label="Vencimento"
+              required
+              type="date"
+              error={errors.dueDate?.message}
+              {...register('dueDate')}
+            />
           </div>
 
-          <ContractItemList control={control} register={register} errors={errors.items} />
+          <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+            <ContractItemList control={control} register={register} errors={errors.items} />
+          </div>
 
-          <DialogFooter>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Salvando...' : 'Salvar'}
+          <DialogFooter className="shrink-0">
+            <Button type="submit" loading={isSubmitting}>
+              Salvar
             </Button>
           </DialogFooter>
         </form>
