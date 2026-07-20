@@ -1,0 +1,199 @@
+import { Injectable } from '@nestjs/common';
+import {
+  CONTRACT_NUMBER_PREFIX,
+  CONTRACT_NUMBER_SEQUENCE,
+} from '../../../common/constants/contract.constants';
+import { ContractStatus, ContractType, Prisma } from '../../../infra/prisma/prisma-client';
+import { PrismaService } from '../../../infra/prisma/prisma.service';
+import { ContractItemInputType, UpdateContractItemDtoType } from '../dto/contract-item.dto';
+
+type TransactionClient = Prisma.TransactionClient;
+
+interface CreateContractData {
+  clientId: string;
+  type: ContractType;
+  dueDate: Date;
+  number: string;
+  items: ContractItemInputType[];
+}
+
+interface FindManyFilters {
+  status?: ContractStatus;
+  type?: ContractType;
+  page: number;
+  limit: number;
+}
+
+const CONTRACT_INCLUDE = { client: true, items: true } as const;
+
+@Injectable()
+export class ContractRepository {
+  constructor(private prisma: PrismaService) {}
+
+  /**
+   * Usa uma sequence do Postgres (criada na migration) para gerar o número do
+   * contrato de forma atômica, evitando corrida entre criações concorrentes que
+   * um simples `count() + 1` teria.
+   */
+  async generateNumber(): Promise<string> {
+    const rows = await this.prisma.$queryRawUnsafe<Array<{ nextval: bigint | number | string }>>(
+      `SELECT nextval('${CONTRACT_NUMBER_SEQUENCE}')`,
+    );
+    const sequenceValue = String(rows[0].nextval);
+    return `${CONTRACT_NUMBER_PREFIX}${sequenceValue.padStart(4, '0')}`;
+  }
+
+  create(data: CreateContractData) {
+    return this.prisma.$transaction(async (tx) => {
+      return tx.contract.create({
+        data: {
+          number: data.number,
+          type: data.type,
+          dueDate: data.dueDate,
+          clientId: data.clientId,
+          value: this.sumItems(data.items),
+          items: {
+            create: data.items.map((item) => ({
+              description: item.description,
+              quantity: item.quantity,
+              unitValue: item.unitValue,
+              subtotal: item.quantity * item.unitValue,
+            })),
+          },
+        },
+        include: CONTRACT_INCLUDE,
+      });
+    });
+  }
+
+  async findMany(filters: FindManyFilters) {
+    const { page, limit, status, type } = filters;
+    const skip = (page - 1) * limit;
+    const where: Prisma.ContractWhereInput = {
+      ...(status && { status }),
+      ...(type && { type }),
+    };
+
+    const [data, total] = await Promise.all([
+      this.prisma.contract.findMany({
+        where,
+        include: { client: true },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.contract.count({ where }),
+    ]);
+
+    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
+  }
+
+  findOne(id: string) {
+    return this.prisma.contract.findUnique({ where: { id }, include: CONTRACT_INCLUDE });
+  }
+
+  update(id: string, data: Prisma.ContractUpdateInput) {
+    return this.prisma.contract.update({ where: { id }, data, include: CONTRACT_INCLUDE });
+  }
+
+  delete(id: string) {
+    return this.prisma.contract.delete({ where: { id } });
+  }
+
+  approve(id: string) {
+    return this.prisma.contract.update({
+      where: { id },
+      data: { status: ContractStatus.ACTIVE },
+      include: CONTRACT_INCLUDE,
+    });
+  }
+
+  close(id: string) {
+    return this.prisma.contract.update({
+      where: { id },
+      data: { status: ContractStatus.CLOSED, closedAt: new Date() },
+      include: CONTRACT_INCLUDE,
+    });
+  }
+
+  async countByStatus(): Promise<Record<ContractStatus, number>> {
+    const groups = await this.prisma.contract.groupBy({
+      by: ['status'],
+      _count: { status: true },
+    });
+
+    const summary: Record<ContractStatus, number> = {
+      DRAFT: 0,
+      ACTIVE: 0,
+      EXPIRED: 0,
+      CLOSED: 0,
+    };
+    for (const group of groups) {
+      summary[group.status] = group._count.status;
+    }
+    return summary;
+  }
+
+  addItem(contractId: string, item: ContractItemInputType) {
+    return this.prisma.$transaction(async (tx) => {
+      await tx.contractItem.create({
+        data: {
+          contractId,
+          description: item.description,
+          quantity: item.quantity,
+          unitValue: item.unitValue,
+          subtotal: item.quantity * item.unitValue,
+        },
+      });
+      return this.recalculateValue(tx, contractId);
+    });
+  }
+
+  updateItem(contractId: string, itemId: string, data: UpdateContractItemDtoType) {
+    return this.prisma.$transaction(async (tx) => {
+      const current = await tx.contractItem.findUniqueOrThrow({ where: { id: itemId } });
+      const quantity = data.quantity ?? Number(current.quantity);
+      const unitValue = data.unitValue ?? Number(current.unitValue);
+
+      await tx.contractItem.update({
+        where: { id: itemId },
+        data: {
+          description: data.description ?? current.description,
+          quantity,
+          unitValue,
+          subtotal: quantity * unitValue,
+        },
+      });
+      return this.recalculateValue(tx, contractId);
+    });
+  }
+
+  deleteItem(contractId: string, itemId: string) {
+    return this.prisma.$transaction(async (tx) => {
+      await tx.contractItem.delete({ where: { id: itemId } });
+      return this.recalculateValue(tx, contractId);
+    });
+  }
+
+  async expireDue(): Promise<number> {
+    const result = await this.prisma.contract.updateMany({
+      where: { status: ContractStatus.ACTIVE, dueDate: { lt: new Date() } },
+      data: { status: ContractStatus.EXPIRED },
+    });
+    return result.count;
+  }
+
+  private async recalculateValue(tx: TransactionClient, contractId: string) {
+    const items = await tx.contractItem.findMany({ where: { contractId } });
+    const value = items.reduce((sum, item) => sum + Number(item.subtotal), 0);
+    return tx.contract.update({
+      where: { id: contractId },
+      data: { value },
+      include: CONTRACT_INCLUDE,
+    });
+  }
+
+  private sumItems(items: ContractItemInputType[]): number {
+    return items.reduce((sum, item) => sum + item.quantity * item.unitValue, 0);
+  }
+}
