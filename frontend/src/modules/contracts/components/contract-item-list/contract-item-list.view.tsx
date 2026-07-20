@@ -47,14 +47,19 @@ export const ContractItemListView = ({
                 )}
               </div>
               <div className="col-span-2 space-y-1">
-                <Input type="number" step="1" placeholder="Qtd." {...register(`items.${index}.quantity`)} />
+                <Input
+                  type="number"
+                  step="1"
+                  placeholder="Qtd."
+                  {...register(`items.${index}.quantity`, { valueAsNumber: true })}
+                />
               </div>
               <div className="col-span-2 space-y-1">
                 <Input
                   type="number"
                   step="0.01"
                   placeholder="Valor unit."
-                  {...register(`items.${index}.unitValue`)}
+                  {...register(`items.${index}.unitValue`, { valueAsNumber: true })}
                 />
               </div>
               <div className="col-span-2 flex h-9 items-center text-sm text-muted-foreground">
