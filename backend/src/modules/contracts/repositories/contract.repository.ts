@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   CONTRACT_NUMBER_PREFIX,
   CONTRACT_NUMBER_SEQUENCE,
@@ -44,25 +44,23 @@ export class ContractRepository {
   }
 
   create(data: CreateContractData) {
-    return this.prisma.$transaction(async (tx) => {
-      return tx.contract.create({
-        data: {
-          number: data.number,
-          type: data.type,
-          dueDate: data.dueDate,
-          clientId: data.clientId,
-          value: this.sumItems(data.items),
-          items: {
-            create: data.items.map((item) => ({
-              description: item.description,
-              quantity: item.quantity,
-              unitValue: item.unitValue,
-              subtotal: item.quantity * item.unitValue,
-            })),
-          },
+    return this.prisma.contract.create({
+      data: {
+        number: data.number,
+        type: data.type,
+        dueDate: data.dueDate,
+        clientId: data.clientId,
+        value: this.sumItems(data.items),
+        items: {
+          create: data.items.map((item) => ({
+            description: item.description,
+            quantity: item.quantity,
+            unitValue: item.unitValue,
+            subtotal: item.quantity * item.unitValue,
+          })),
         },
-        include: CONTRACT_INCLUDE,
-      });
+      },
+      include: CONTRACT_INCLUDE,
     });
   }
 
@@ -151,7 +149,10 @@ export class ContractRepository {
 
   updateItem(contractId: string, itemId: string, data: UpdateContractItemDtoType) {
     return this.prisma.$transaction(async (tx) => {
-      const current = await tx.contractItem.findUniqueOrThrow({ where: { id: itemId } });
+      const current = await tx.contractItem.findUnique({ where: { id: itemId } });
+      if (!current) {
+        throw new NotFoundException('Item não encontrado');
+      }
       const quantity = data.quantity ?? Number(current.quantity);
       const unitValue = data.unitValue ?? Number(current.unitValue);
 
