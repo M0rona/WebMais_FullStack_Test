@@ -7,6 +7,7 @@ import { ContractService } from './contract.service';
 import { ExpireContractsProcessor } from './jobs/expire-contracts.processor';
 import { ExpireContractsScheduler } from './jobs/expire-contracts.scheduler';
 import { ContractRepository } from './repositories/contract.repository';
+import { ContractCacheService } from './services/contract-cache.service';
 
 @Module({
   imports: [ClientModule, BullModule.registerQueue({ name: CONTRACTS_QUEUE_NAME })],
@@ -14,6 +15,7 @@ import { ContractRepository } from './repositories/contract.repository';
   providers: [
     ContractService,
     ContractRepository,
+    ContractCacheService,
     ExpireContractsProcessor,
     ExpireContractsScheduler,
   ],

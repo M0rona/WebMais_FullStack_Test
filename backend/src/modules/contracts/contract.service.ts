@@ -15,6 +15,7 @@ import {
   UpdateContractDtoType,
 } from './dto/contract.dto';
 import { ContractRepository } from './repositories/contract.repository';
+import { ContractCacheService } from './services/contract-cache.service';
 
 export interface ContractsSummaryDto {
   draft: number;
@@ -42,6 +43,7 @@ export class ContractService {
     private contractRepository: ContractRepository,
     private clientService: ClientService,
     private redis: RedisService,
+    private contractCache: ContractCacheService,
   ) {}
 
   async create(dto: CreateContractDtoType): Promise<ContractResponseDto> {
@@ -56,16 +58,14 @@ export class ContractService {
       items: dto.items,
     });
 
-    await this.invalidateCache();
+    await this.contractCache.invalidate();
     return ContractMapper.toResponse(contract);
   }
 
   async findAll(query: ListContractsQueryType): Promise<PaginatedContractsDto> {
     const cacheKey = this.buildListCacheKey(query);
     const cached = await this.redis.getJson<PaginatedContractsDto>(cacheKey);
-    if (cached) {
-      return cached;
-    }
+    if (cached) return cached;
 
     const result = await this.contractRepository.findMany({
       status: query.status,
@@ -88,9 +88,7 @@ export class ContractService {
 
   async summary(): Promise<ContractsSummaryDto> {
     const cached = await this.redis.getJson<ContractsSummaryDto>(CONTRACTS_SUMMARY_CACHE_KEY);
-    if (cached) {
-      return cached;
-    }
+    if (cached) return cached;
 
     const counts = await this.contractRepository.countByStatus();
     const summary: ContractsSummaryDto = {
@@ -123,14 +121,14 @@ export class ContractService {
       ...(dto.dueDate && { dueDate: new Date(dto.dueDate) }),
     });
 
-    await this.invalidateCache();
+    await this.contractCache.invalidate();
     return ContractMapper.toResponse(updated);
   }
 
   async delete(id: string): Promise<void> {
     await this.getOrThrow(id);
     await this.contractRepository.delete(id);
-    await this.invalidateCache();
+    await this.contractCache.invalidate();
   }
 
   async approve(id: string): Promise<ContractResponseDto> {
@@ -143,7 +141,7 @@ export class ContractService {
     }
 
     const approved = await this.contractRepository.approve(id);
-    await this.invalidateCache();
+    await this.contractCache.invalidate();
     return ContractMapper.toResponse(approved);
   }
 
@@ -157,7 +155,7 @@ export class ContractService {
     }
 
     const closed = await this.contractRepository.close(id);
-    await this.invalidateCache();
+    await this.contractCache.invalidate();
     return ContractMapper.toResponse(closed);
   }
 
@@ -166,7 +164,7 @@ export class ContractService {
     this.assertNotClosed(contract.status);
 
     const updated = await this.contractRepository.addItem(contractId, item);
-    await this.invalidateCache();
+    await this.contractCache.invalidate();
     return ContractMapper.toResponse(updated);
   }
 
@@ -180,7 +178,7 @@ export class ContractService {
     this.assertItemBelongsToContract(contract, itemId);
 
     const updated = await this.contractRepository.updateItem(contractId, itemId, dto);
-    await this.invalidateCache();
+    await this.contractCache.invalidate();
     return ContractMapper.toResponse(updated);
   }
 
@@ -190,7 +188,7 @@ export class ContractService {
     this.assertItemBelongsToContract(contract, itemId);
 
     const updated = await this.contractRepository.deleteItem(contractId, itemId);
-    await this.invalidateCache();
+    await this.contractCache.invalidate();
     return ContractMapper.toResponse(updated);
   }
 
@@ -219,12 +217,5 @@ export class ContractService {
     const status = query.status ?? 'all';
     const type = query.type ?? 'all';
     return `${CONTRACTS_LIST_CACHE_PREFIX}${query.page}:${query.limit}:${status}:${type}`;
-  }
-
-  private async invalidateCache(): Promise<void> {
-    await Promise.all([
-      this.redis.deleteByPrefix(CONTRACTS_LIST_CACHE_PREFIX),
-      this.redis.del(CONTRACTS_SUMMARY_CACHE_KEY),
-    ]);
   }
 }

@@ -5,6 +5,7 @@ import { RedisService } from '../../infra/redis/redis.service';
 import { ClientService } from '../clients/client.service';
 import { ContractService } from './contract.service';
 import { ContractRepository } from './repositories/contract.repository';
+import { ContractCacheService } from './services/contract-cache.service';
 
 describe('ContractService', () => {
   let service: ContractService;
@@ -30,6 +31,7 @@ describe('ContractService', () => {
     deleteByPrefix: jest.fn(),
     del: jest.fn(),
   };
+  const contractCache = { invalidate: jest.fn() };
 
   const draftContract = {
     id: 'c1',
@@ -56,6 +58,7 @@ describe('ContractService', () => {
         { provide: ContractRepository, useValue: contractRepository },
         { provide: ClientService, useValue: clientService },
         { provide: RedisService, useValue: redis },
+        { provide: ContractCacheService, useValue: contractCache },
       ],
     }).compile();
 
@@ -81,8 +84,7 @@ describe('ContractService', () => {
       });
 
       expect(clientService.findOne).toHaveBeenCalledWith('client-1');
-      expect(redis.deleteByPrefix).toHaveBeenCalled();
-      expect(redis.del).toHaveBeenCalled();
+      expect(contractCache.invalidate).toHaveBeenCalled();
     });
   });
 
@@ -137,7 +139,7 @@ describe('ContractService', () => {
       await service.approve('c1');
 
       expect(contractRepository.approve).toHaveBeenCalledWith('c1');
-      expect(redis.del).toHaveBeenCalled();
+      expect(contractCache.invalidate).toHaveBeenCalled();
     });
   });
 
