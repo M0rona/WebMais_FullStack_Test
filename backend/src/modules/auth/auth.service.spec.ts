@@ -3,19 +3,18 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
 import * as bcrypt from 'bcryptjs';
-import { PrismaService } from '../../infra/prisma/prisma.service';
 import { AuthService } from './auth.service';
+import { UserRepository } from './repositories/user.repository';
 
 jest.mock('bcryptjs');
 
 describe('AuthService', () => {
   let service: AuthService;
 
-  const prisma = {
-    user: {
-      findUnique: jest.fn(),
-      create: jest.fn(),
-    },
+  const userRepository = {
+    findByEmail: jest.fn(),
+    findById: jest.fn(),
+    create: jest.fn(),
   };
   const jwtService = { sign: jest.fn().mockReturnValue('signed-token') };
   const configService = {
@@ -29,7 +28,7 @@ describe('AuthService', () => {
     const module = await Test.createTestingModule({
       providers: [
         AuthService,
-        { provide: PrismaService, useValue: prisma },
+        { provide: UserRepository, useValue: userRepository },
         { provide: JwtService, useValue: jwtService },
         { provide: ConfigService, useValue: configService },
       ],
@@ -40,14 +39,16 @@ describe('AuthService', () => {
 
   describe('register', () => {
     it('cria um usuário novo, faz hash da senha e retorna o token', async () => {
-      prisma.user.findUnique.mockResolvedValue(null);
+      userRepository.findByEmail.mockResolvedValue(null);
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashed-password');
-      prisma.user.create.mockResolvedValue({ id: '1', email: 'a@a.com', name: 'A' });
+      userRepository.create.mockResolvedValue({ id: '1', email: 'a@a.com', name: 'A' });
 
       const result = await service.register({ name: 'A', email: 'a@a.com', password: '123456' });
 
-      expect(prisma.user.create).toHaveBeenCalledWith({
-        data: { name: 'A', email: 'a@a.com', password: 'hashed-password' },
+      expect(userRepository.create).toHaveBeenCalledWith({
+        name: 'A',
+        email: 'a@a.com',
+        password: 'hashed-password',
       });
       expect(result).toEqual({
         accessToken: 'signed-token',
@@ -56,18 +57,18 @@ describe('AuthService', () => {
     });
 
     it('rejeita cadastro com email já existente', async () => {
-      prisma.user.findUnique.mockResolvedValue({ id: '1' });
+      userRepository.findByEmail.mockResolvedValue({ id: '1' });
 
       await expect(
         service.register({ name: 'A', email: 'a@a.com', password: '123456' }),
       ).rejects.toBeInstanceOf(ConflictException);
-      expect(prisma.user.create).not.toHaveBeenCalled();
+      expect(userRepository.create).not.toHaveBeenCalled();
     });
   });
 
   describe('login', () => {
     it('autentica com credenciais válidas', async () => {
-      prisma.user.findUnique.mockResolvedValue({
+      userRepository.findByEmail.mockResolvedValue({
         id: '1',
         email: 'a@a.com',
         name: 'A',
@@ -81,7 +82,7 @@ describe('AuthService', () => {
     });
 
     it('rejeita usuário inexistente', async () => {
-      prisma.user.findUnique.mockResolvedValue(null);
+      userRepository.findByEmail.mockResolvedValue(null);
 
       await expect(service.login({ email: 'a@a.com', password: '123456' })).rejects.toBeInstanceOf(
         UnauthorizedException,
@@ -89,7 +90,7 @@ describe('AuthService', () => {
     });
 
     it('rejeita senha incorreta', async () => {
-      prisma.user.findUnique.mockResolvedValue({
+      userRepository.findByEmail.mockResolvedValue({
         id: '1',
         email: 'a@a.com',
         name: 'A',
