@@ -6,9 +6,15 @@ O Prisma 7 mudou a arquitetura do client: motor Rust removido, driver adapter
 obrigatório, e a URL de conexão não fica mais no `datasource` do schema — vai
 em `backend/prisma.config.ts` (`defineConfig` de `prisma/config`, campo
 `datasource.url`). O `generator` usa `provider = "prisma-client"` com
-`output` explícito (aqui, `../generated/prisma`, **não versionado no Git** —
+`output` explícito. **O output fica dentro de `src/`**
+(`src/generated/prisma`), não num `generated/` na raiz do backend — isso não
+é cosmético: o build (SWC, via `nest-cli.json`) só compila arquivos sob
+`src/`, e o client gerado é `.ts` cru. Com o output fora de `src/`,
+`node dist/main.js` falha em runtime com `MODULE_NOT_FOUND` (funciona nos
+testes só porque `ts-jest` transpila on-the-fly, o que mascarou o problema
+até testarmos o boot real da aplicação compilada). Não é versionado no Git —
 regenerado via `prisma generate`, que já roda automaticamente no
-`postinstall`). O runtime instancia o client com `@prisma/adapter-pg`:
+`postinstall`. O runtime instancia o client com `@prisma/adapter-pg`:
 
 ```ts
 // src/infra/prisma/prisma.service.ts (resumo)
@@ -19,7 +25,7 @@ super({ adapter });
 ```prisma
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {

@@ -1,6 +1,10 @@
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
+  // Fica dentro de src/ de propósito: o build (SWC, via nest-cli.json) só
+  // compila arquivos sob src/, e o client gerado é .ts cru — fora de src/,
+  // `node dist/main.js` falha com MODULE_NOT_FOUND em produção (só funciona
+  // em teste porque o ts-jest transpila on-the-fly).
+  output = "../src/generated/prisma"
 }
 
 datasource db {
