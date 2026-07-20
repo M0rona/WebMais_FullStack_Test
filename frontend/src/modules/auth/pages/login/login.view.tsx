@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import { Button } from '@/common/components/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -34,8 +34,8 @@ export const LoginView = ({ form, onSubmit, isLoggingIn }: LoginModel) => {
               />
               {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
             </div>
-            <Button type="submit" className="w-full" disabled={isLoggingIn}>
-              {isLoggingIn ? 'Entrando...' : 'Entrar'}
+            <Button type="submit" className="w-full" loading={isLoggingIn}>
+              Entrar
             </Button>
           </form>
         </CardContent>

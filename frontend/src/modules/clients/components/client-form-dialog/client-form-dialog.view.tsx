@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/common/components/button';
 import {
   Dialog,
   DialogContent,
@@ -49,8 +49,8 @@ export const ClientFormDialogView = ({
             {errors.document && <p className="text-sm text-destructive">{errors.document.message}</p>}
           </div>
           <DialogFooter>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Salvando...' : 'Salvar'}
+            <Button type="submit" loading={isSubmitting}>
+              Salvar
             </Button>
           </DialogFooter>
         </form>
