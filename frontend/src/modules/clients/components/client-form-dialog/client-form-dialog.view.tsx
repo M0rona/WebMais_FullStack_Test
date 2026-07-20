@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Button } from '@/common/components/button';
+import { InputField } from '@/common/components/input-field';
 import {
   Dialog,
   DialogContent,
@@ -8,8 +9,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import type { ClientFormDialogModel } from './client-form-dialog.model';
 
 type ClientFormDialogViewProps = ClientFormDialogModel & {
@@ -38,16 +37,14 @@ export const ClientFormDialogView = ({
           <DialogTitle>{isEditing ? 'Editar cliente' : 'Novo cliente'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={onSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Nome</Label>
-            <Input id="name" {...register('name')} />
-            {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="document">CPF/CNPJ</Label>
-            <Input id="document" placeholder="Somente números" {...register('document')} />
-            {errors.document && <p className="text-sm text-destructive">{errors.document.message}</p>}
-          </div>
+          <InputField label="Nome" required error={errors.name?.message} {...register('name')} />
+          <InputField
+            label="CPF/CNPJ"
+            required
+            placeholder="Somente números"
+            error={errors.document?.message}
+            {...register('document')}
+          />
           <DialogFooter>
             <Button type="submit" loading={isSubmitting}>
               Salvar

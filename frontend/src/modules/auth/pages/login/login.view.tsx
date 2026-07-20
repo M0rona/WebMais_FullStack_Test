@@ -1,8 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/common/components/button';
+import { InputField } from '@/common/components/input-field';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import type { LoginModel } from './login.model';
 
 export const LoginView = ({ form, onSubmit, isLoggingIn }: LoginModel) => {
@@ -20,21 +19,22 @@ export const LoginView = ({ form, onSubmit, isLoggingIn }: LoginModel) => {
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" autoComplete="username" {...register('email')} />
-              {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
-              <Input
-                id="password"
-                type="password"
-                autoComplete="current-password"
-                {...register('password')}
-              />
-              {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
-            </div>
+            <InputField
+              label="Email"
+              required
+              type="email"
+              autoComplete="username"
+              error={errors.email?.message}
+              {...register('email')}
+            />
+            <InputField
+              label="Senha"
+              required
+              type="password"
+              autoComplete="current-password"
+              error={errors.password?.message}
+              {...register('password')}
+            />
             <Button type="submit" className="w-full" loading={isLoggingIn}>
               Entrar
             </Button>
