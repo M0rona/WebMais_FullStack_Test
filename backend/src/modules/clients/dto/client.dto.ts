@@ -3,11 +3,11 @@ import { z } from 'zod';
 import { isValidCpfOrCnpj } from '../../../common/utils/document.util';
 
 export const CreateClientSchema = z.object({
-  name: z.string().min(2, 'Nome deve ter no mínimo 2 caracteres'),
+  name: z.string().min(2, 'clients.validation.name.min'),
   document: z
     .string()
-    .regex(/^\d{11}$|^\d{14}$/, 'Documento deve ter 11 (CPF) ou 14 (CNPJ) dígitos, sem formatação')
-    .refine(isValidCpfOrCnpj, { message: 'CPF/CNPJ inválido' }),
+    .regex(/^\d{11}$|^\d{14}$/, 'clients.validation.document.format')
+    .refine(isValidCpfOrCnpj, { message: 'clients.validation.document.invalid' }),
 });
 
 export const UpdateClientSchema = CreateClientSchema.partial();

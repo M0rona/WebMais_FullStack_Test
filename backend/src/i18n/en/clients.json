@@ -1,0 +1,16 @@
+{
+  "validation": {
+    "name": {
+      "min": "Name must be at least 2 characters long"
+    },
+    "document": {
+      "format": "Document must have 11 (CPF) or 14 (CNPJ) digits, unformatted",
+      "invalid": "Invalid CPF/CNPJ"
+    }
+  },
+  "errors": {
+    "notFound": "Client not found",
+    "hasContracts": "Client has linked contracts and cannot be deleted",
+    "documentInUse": "A client with this document already exists"
+  }
+}

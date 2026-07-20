@@ -7,20 +7,20 @@ export const ContractTypeSchema = z.enum(['SERVICE', 'SUPPLY', 'LEASE']);
 export const ContractStatusSchema = z.enum(['DRAFT', 'ACTIVE', 'EXPIRED', 'CLOSED']);
 
 const dueDateSchema = z.iso
-  .datetime('Data de vencimento inválida')
+  .datetime('contracts.validation.dueDate.invalid')
   .refine((date) => new Date(date) > new Date(), {
-    message: 'Data de vencimento deve ser no futuro',
+    message: 'contracts.validation.dueDate.future',
   });
 
 export const CreateContractSchema = z.object({
-  clientId: z.uuid('Cliente inválido'),
+  clientId: z.uuid('contracts.validation.client.invalid'),
   type: ContractTypeSchema.default('SERVICE'),
   dueDate: dueDateSchema,
-  items: z.array(ContractItemInputSchema).min(1, 'Contrato precisa de ao menos um item'),
+  items: z.array(ContractItemInputSchema).min(1, 'contracts.validation.items.min'),
 });
 
 export const UpdateContractSchema = z.object({
-  clientId: z.uuid('Cliente inválido').optional(),
+  clientId: z.uuid('contracts.validation.client.invalid').optional(),
   type: ContractTypeSchema.optional(),
   dueDate: dueDateSchema.optional(),
 });

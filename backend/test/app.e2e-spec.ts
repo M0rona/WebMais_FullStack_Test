@@ -144,4 +144,46 @@ describe('App (e2e)', () => {
       }),
     );
   });
+
+  describe('i18n', () => {
+    it('traduz mensagens de validação Zod conforme Accept-Language', async () => {
+      const ptResponse = await request(app.getHttpServer())
+        .post('/auth/register')
+        .set('Accept-Language', 'pt-BR')
+        .send({ name: 'A', email: 'invalido', password: '123' })
+        .expect(400);
+
+      const enResponse = await request(app.getHttpServer())
+        .post('/auth/register')
+        .set('Accept-Language', 'en')
+        .send({ name: 'A', email: 'invalido', password: '123' })
+        .expect(400);
+
+      expect(ptResponse.body.message).toContain('Nome deve ter no mínimo 2 caracteres');
+      expect(enResponse.body.message).toContain('Name must be at least 2 characters long');
+    });
+
+    it('traduz mensagens de exceções de negócio conforme Accept-Language', async () => {
+      const email = `i18n-${unique}@webmais.com`;
+      await request(app.getHttpServer())
+        .post('/auth/register')
+        .send({ name: 'Usuário i18n', email, password: '123456' })
+        .expect(201);
+
+      const ptResponse = await request(app.getHttpServer())
+        .post('/auth/register')
+        .set('Accept-Language', 'pt-BR')
+        .send({ name: 'Usuário i18n', email, password: '123456' })
+        .expect(409);
+
+      const enResponse = await request(app.getHttpServer())
+        .post('/auth/register')
+        .set('Accept-Language', 'en')
+        .send({ name: 'Usuário i18n', email, password: '123456' })
+        .expect(409);
+
+      expect(ptResponse.body.message).toBe('Já existe um usuário com este email');
+      expect(enResponse.body.message).toBe('A user with this email already exists');
+    });
+  });
 });

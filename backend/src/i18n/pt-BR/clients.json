@@ -1,0 +1,16 @@
+{
+  "validation": {
+    "name": {
+      "min": "Nome deve ter no mínimo 2 caracteres"
+    },
+    "document": {
+      "format": "Documento deve ter 11 (CPF) ou 14 (CNPJ) dígitos, sem formatação",
+      "invalid": "CPF/CNPJ inválido"
+    }
+  },
+  "errors": {
+    "notFound": "Cliente não encontrado",
+    "hasContracts": "Cliente possui contratos vinculados e não pode ser excluído",
+    "documentInUse": "Já existe um cliente com este documento"
+  }
+}

@@ -7,6 +7,9 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { I18nContext } from 'nestjs-i18n';
+import { ZodValidationException } from 'nestjs-zod';
+import type { ZodIssue } from 'zod';
 
 interface ErrorResponseBody {
   statusCode: number;
@@ -24,12 +27,21 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
+    const i18n = I18nContext.current(host);
 
     const isHttpException = exception instanceof HttpException;
     const status: number = isHttpException
       ? exception.getStatus()
       : HttpStatus.INTERNAL_SERVER_ERROR;
-    const message = isHttpException ? this.extractMessage(exception) : 'Erro interno do servidor';
+
+    let message: string | string[];
+    if (exception instanceof ZodValidationException) {
+      message = this.translateZodIssues(exception, i18n);
+    } else if (isHttpException) {
+      message = this.extractMessage(exception);
+    } else {
+      message = i18n?.t('common.errors.internal') ?? 'Erro interno do servidor';
+    }
 
     if (!isHttpException || status >= 500) {
       this.logger.error(
@@ -47,6 +59,15 @@ export class AllExceptionsFilter implements ExceptionFilter {
     };
 
     response.status(status).json(body);
+  }
+
+  private translateZodIssues(
+    exception: ZodValidationException,
+    i18n: I18nContext | undefined,
+  ): string[] {
+    const zodError = exception.getZodError() as { issues?: ZodIssue[] } | undefined;
+    const issues = zodError?.issues ?? [];
+    return issues.map((issue) => (i18n ? i18n.t(issue.message) : issue.message));
   }
 
   private extractMessage(exception: HttpException): string | string[] {

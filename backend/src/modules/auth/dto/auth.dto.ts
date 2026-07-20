@@ -2,14 +2,14 @@ import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 
 export const RegisterSchema = z.object({
-  name: z.string().min(2, 'Nome deve ter no mínimo 2 caracteres'),
-  email: z.email({ message: 'Email inválido' }),
-  password: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
+  name: z.string().min(2, 'auth.validation.name.min'),
+  email: z.email({ message: 'auth.validation.email.invalid' }),
+  password: z.string().min(6, 'auth.validation.password.min'),
 });
 
 export const LoginSchema = z.object({
-  email: z.email({ message: 'Email inválido' }),
-  password: z.string().min(1, 'Senha é obrigatória'),
+  email: z.email({ message: 'auth.validation.email.invalid' }),
+  password: z.string().min(1, 'auth.validation.password.required'),
 });
 
 export class RegisterDto extends createZodDto(RegisterSchema) {}

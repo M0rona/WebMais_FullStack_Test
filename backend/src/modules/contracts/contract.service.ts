@@ -5,6 +5,7 @@ import {
   CONTRACTS_SUMMARY_CACHE_KEY,
 } from '../../common/constants/contract.constants';
 import { ContractMapper, ContractResponseDto } from '../../common/mappers/contract.mapper';
+import { translate } from '../../common/utils/i18n.util';
 import { ContractStatus } from '../../infra/prisma/prisma-client';
 import { RedisService } from '../../infra/redis/redis.service';
 import { ClientService } from '../clients/client.service';
@@ -135,10 +136,20 @@ export class ContractService {
   async approve(id: string): Promise<ContractResponseDto> {
     const contract = await this.getOrThrow(id);
     if (contract.status !== ContractStatus.DRAFT) {
-      throw new BadRequestException('Apenas contratos em rascunho podem ser aprovados');
+      throw new BadRequestException(
+        translate(
+          'contracts.errors.onlyDraftCanApprove',
+          'Apenas contratos em rascunho podem ser aprovados',
+        ),
+      );
     }
     if (contract.items.length === 0) {
-      throw new BadRequestException('Contrato precisa de ao menos um item para ser aprovado');
+      throw new BadRequestException(
+        translate(
+          'contracts.errors.needsAtLeastOneItem',
+          'Contrato precisa de ao menos um item para ser aprovado',
+        ),
+      );
     }
 
     const approved = await this.contractRepository.approve(id);
@@ -149,10 +160,17 @@ export class ContractService {
   async close(id: string): Promise<ContractResponseDto> {
     const contract = await this.getOrThrow(id);
     if (contract.status === ContractStatus.DRAFT) {
-      throw new BadRequestException('Não é possível encerrar um contrato em rascunho');
+      throw new BadRequestException(
+        translate(
+          'contracts.errors.cannotCloseDraft',
+          'Não é possível encerrar um contrato em rascunho',
+        ),
+      );
     }
     if (contract.status === ContractStatus.CLOSED) {
-      throw new BadRequestException('Contrato já está encerrado');
+      throw new BadRequestException(
+        translate('contracts.errors.alreadyClosed', 'Contrato já está encerrado'),
+      );
     }
 
     const closed = await this.contractRepository.close(id);
@@ -196,21 +214,30 @@ export class ContractService {
   private async getOrThrow(id: string) {
     const contract = await this.contractRepository.findOne(id);
     if (!contract) {
-      throw new NotFoundException('Contrato não encontrado');
+      throw new NotFoundException(
+        translate('contracts.errors.notFound', 'Contrato não encontrado'),
+      );
     }
     return contract;
   }
 
   private assertNotClosed(status: ContractStatus): void {
     if (status === ContractStatus.CLOSED) {
-      throw new BadRequestException('Contrato encerrado não pode ser alterado');
+      throw new BadRequestException(
+        translate(
+          'contracts.errors.closedCannotBeModified',
+          'Contrato encerrado não pode ser alterado',
+        ),
+      );
     }
   }
 
   private assertItemBelongsToContract(contract: ContractWithItems, itemId: string): void {
     const belongsToContract = contract.items.some((item) => item.id === itemId);
     if (!belongsToContract) {
-      throw new NotFoundException('Item não encontrado neste contrato');
+      throw new NotFoundException(
+        translate('contracts.errors.itemNotFoundInContract', 'Item não encontrado neste contrato'),
+      );
     }
   }
 

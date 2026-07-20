@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Client } from '../../infra/prisma/prisma-client';
 import { ClientMapper, ClientResponseDto } from '../../common/mappers/client.mapper';
+import { translate } from '../../common/utils/i18n.util';
 import { CreateClientDtoType, UpdateClientDtoType } from './dto/client.dto';
 import { ClientRepository } from './repositories/client.repository';
 
@@ -42,7 +43,12 @@ export class ClientService {
     await this.getOrThrow(id);
     const contractsCount = await this.clientRepository.countContracts(id);
     if (contractsCount > 0) {
-      throw new BadRequestException('Cliente possui contratos vinculados e não pode ser excluído');
+      throw new BadRequestException(
+        translate(
+          'clients.errors.hasContracts',
+          'Cliente possui contratos vinculados e não pode ser excluído',
+        ),
+      );
     }
     await this.clientRepository.delete(id);
   }
@@ -50,7 +56,7 @@ export class ClientService {
   private async getOrThrow(id: string): Promise<Client> {
     const client = await this.clientRepository.findOne(id);
     if (!client) {
-      throw new NotFoundException('Cliente não encontrado');
+      throw new NotFoundException(translate('clients.errors.notFound', 'Cliente não encontrado'));
     }
     return client;
   }
@@ -58,7 +64,9 @@ export class ClientService {
   private async assertDocumentAvailable(document: string, ignoreClientId?: string): Promise<void> {
     const existing = await this.clientRepository.findByDocument(document);
     if (existing && existing.id !== ignoreClientId) {
-      throw new ConflictException('Já existe um cliente com este documento');
+      throw new ConflictException(
+        translate('clients.errors.documentInUse', 'Já existe um cliente com este documento'),
+      );
     }
   }
 }

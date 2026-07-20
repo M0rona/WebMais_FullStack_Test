@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { getJwtExpiresInSeconds } from '../../common/utils/jwt.util';
+import { translate } from '../../common/utils/i18n.util';
 import { AuthResponseDto, LoginDtoType, RegisterDtoType } from './dto/auth.dto';
 import { UserRepository } from './repositories/user.repository';
 
@@ -19,7 +20,9 @@ export class AuthService {
   async register(dto: RegisterDtoType): Promise<AuthResponseDto> {
     const existing = await this.userRepository.findByEmail(dto.email);
     if (existing) {
-      throw new ConflictException('Já existe um usuário com este email');
+      throw new ConflictException(
+        translate('auth.errors.emailInUse', 'Já existe um usuário com este email'),
+      );
     }
 
     const hashedPassword = await bcrypt.hash(dto.password, PASSWORD_SALT_ROUNDS);
@@ -35,12 +38,16 @@ export class AuthService {
   async login(dto: LoginDtoType): Promise<AuthResponseDto> {
     const user = await this.userRepository.findByEmail(dto.email);
     if (!user) {
-      throw new UnauthorizedException('Credenciais inválidas');
+      throw new UnauthorizedException(
+        translate('auth.errors.invalidCredentials', 'Credenciais inválidas'),
+      );
     }
 
     const isPasswordValid = await bcrypt.compare(dto.password, user.password);
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Credenciais inválidas');
+      throw new UnauthorizedException(
+        translate('auth.errors.invalidCredentials', 'Credenciais inválidas'),
+      );
     }
 
     return this.buildAuthResponse(user.id, user.email, user.name);

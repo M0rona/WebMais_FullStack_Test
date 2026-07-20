@@ -1,0 +1,35 @@
+{
+  "validation": {
+    "client": {
+      "invalid": "Invalid client"
+    },
+    "dueDate": {
+      "invalid": "Invalid due date",
+      "future": "Due date must be in the future"
+    },
+    "items": {
+      "min": "Contract needs at least one item"
+    },
+    "item": {
+      "description": {
+        "min": "Description must be at least 2 characters long"
+      },
+      "quantity": {
+        "positive": "Quantity must be positive"
+      },
+      "unitValue": {
+        "positive": "Unit value must be positive"
+      }
+    }
+  },
+  "errors": {
+    "notFound": "Contract not found",
+    "onlyDraftCanApprove": "Only draft contracts can be approved",
+    "needsAtLeastOneItem": "Contract needs at least one item to be approved",
+    "cannotCloseDraft": "A draft contract cannot be closed",
+    "alreadyClosed": "Contract is already closed",
+    "closedCannotBeModified": "A closed contract cannot be modified",
+    "itemNotFoundInContract": "Item not found in this contract",
+    "itemNotFound": "Item not found"
+  }
+}

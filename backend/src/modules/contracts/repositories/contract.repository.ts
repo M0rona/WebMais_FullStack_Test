@@ -3,6 +3,7 @@ import {
   CONTRACT_NUMBER_PREFIX,
   CONTRACT_NUMBER_SEQUENCE,
 } from '../../../common/constants/contract.constants';
+import { translate } from '../../../common/utils/i18n.util';
 import { ContractStatus, ContractType, Prisma } from '../../../infra/prisma/prisma-client';
 import { PrismaService } from '../../../infra/prisma/prisma.service';
 import { ContractItemInputType, UpdateContractItemDtoType } from '../dto/contract-item.dto';
@@ -153,7 +154,9 @@ export class ContractRepository {
     return this.prisma.$transaction(async (tx) => {
       const current = await tx.contractItem.findUnique({ where: { id: itemId } });
       if (!current) {
-        throw new NotFoundException('Item não encontrado');
+        throw new NotFoundException(
+          translate('contracts.errors.itemNotFound', 'Item não encontrado'),
+        );
       }
       const quantity = data.quantity ?? Number(current.quantity);
       const unitValue = data.unitValue ?? Number(current.unitValue);

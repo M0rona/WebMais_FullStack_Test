@@ -1,0 +1,35 @@
+{
+  "validation": {
+    "client": {
+      "invalid": "Cliente inválido"
+    },
+    "dueDate": {
+      "invalid": "Data de vencimento inválida",
+      "future": "Data de vencimento deve ser no futuro"
+    },
+    "items": {
+      "min": "Contrato precisa de ao menos um item"
+    },
+    "item": {
+      "description": {
+        "min": "Descrição deve ter no mínimo 2 caracteres"
+      },
+      "quantity": {
+        "positive": "Quantidade deve ser positiva"
+      },
+      "unitValue": {
+        "positive": "Valor unitário deve ser positivo"
+      }
+    }
+  },
+  "errors": {
+    "notFound": "Contrato não encontrado",
+    "onlyDraftCanApprove": "Apenas contratos em rascunho podem ser aprovados",
+    "needsAtLeastOneItem": "Contrato precisa de ao menos um item para ser aprovado",
+    "cannotCloseDraft": "Não é possível encerrar um contrato em rascunho",
+    "alreadyClosed": "Contrato já está encerrado",
+    "closedCannotBeModified": "Contrato encerrado não pode ser alterado",
+    "itemNotFoundInContract": "Item não encontrado neste contrato",
+    "itemNotFound": "Item não encontrado"
+  }
+}
