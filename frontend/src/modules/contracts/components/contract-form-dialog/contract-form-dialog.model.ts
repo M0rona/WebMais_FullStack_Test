@@ -3,9 +3,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import type { Contract } from '@/common/types';
+import type { Contract } from '@/common/types/contract.type';
 import { getErrorMessage } from '@/common/utils/error-handler';
-import { contractSchema, type ContractFormData } from '@/common/utils/validations';
+import { contractSchema, type ContractFormData } from '@/modules/contracts/schemas/contract.schema';
 import { clientService } from '@/modules/clients/services/client.service';
 import { contractService } from '../../services/contract.service';
 
@@ -51,11 +51,12 @@ export const useContractFormDialogModel = ({ contract }: ContractFormDialogProps
         return contractService.create({ ...data, dueDate });
       }
 
-      await contractService.update(contract.id, { clientId: data.clientId, type: data.type, dueDate });
+      await contractService.update(contract.id, {
+        clientId: data.clientId,
+        type: data.type,
+        dueDate,
+      });
 
-      // Contrato existente: cabeçalho já foi salvo acima. Itens não têm endpoint de "salvar
-      // tudo de uma vez" no backend — precisamos comparar com o estado original e disparar
-      // create/update/delete item a item.
       const originalItemIds = new Set((contract.items ?? []).map((item) => item.id));
       const currentItemIds = new Set(data.items.map((item) => item.id).filter(Boolean));
 
@@ -66,7 +67,11 @@ export const useContractFormDialogModel = ({ contract }: ContractFormDialogProps
       }
 
       for (const item of data.items) {
-        const payload = { description: item.description, quantity: item.quantity, unitValue: item.unitValue };
+        const payload = {
+          description: item.description,
+          quantity: item.quantity,
+          unitValue: item.unitValue,
+        };
         if (item.id) {
           await contractService.updateItem(contract.id, item.id, payload);
         } else {

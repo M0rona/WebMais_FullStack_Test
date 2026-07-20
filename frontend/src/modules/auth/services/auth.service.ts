@@ -1,6 +1,6 @@
 import { api } from '@/common/services/api.service';
-import type { AuthResponse } from '@/common/types';
-import type { LoginFormData } from '@/common/utils/validations';
+import type { AuthResponse } from '@/common/types/auth-response.type';
+import type { LoginFormData } from '@/modules/auth/schemas/login.schema';
 
 export const authService = {
   login: async (data: LoginFormData): Promise<AuthResponse> => {

@@ -1,6 +1,6 @@
 import { api } from '@/common/services/api.service';
-import type { Client } from '@/common/types';
-import type { ClientFormData } from '@/common/utils/validations';
+import type { Client } from '@/common/types/client.type';
+import type { ClientFormData } from '@/modules/clients/schemas/client.schema';
 
 export const clientService = {
   findAll: async (): Promise<Client[]> => {

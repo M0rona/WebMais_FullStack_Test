@@ -1,4 +1,4 @@
-import type { ContractStatus } from '@/common/types';
+import type { ContractStatus } from '@/common/types/contract.type';
 import { useContractSummaryCardsModel } from './contract-summary-cards.model';
 import { ContractSummaryCardsView } from './contract-summary-cards.view';
 

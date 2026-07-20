@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Header from '@/common/components/header';
 import { ProtectedRoute } from '@/common/components/protected-route';
-import { Toaster } from '@/common/components/ui/sonner';
+import { Toaster } from '@/components/ui/sonner';
 import Login from '@/modules/auth/pages/login';
 import ClientList from '@/modules/clients/pages/client-list';
 import ContractList from '@/modules/contracts/pages/contract-list';

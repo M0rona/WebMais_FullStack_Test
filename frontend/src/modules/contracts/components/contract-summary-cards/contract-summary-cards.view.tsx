@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/common/components/ui/card';
-import { Skeleton } from '@/common/components/ui/skeleton';
-import type { ContractStatus } from '@/common/types';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import type { ContractStatus } from '@/common/types/contract.type';
 import { cn } from '@/lib/utils';
 import type { ContractSummaryCardsModel } from './contract-summary-cards.model';
 

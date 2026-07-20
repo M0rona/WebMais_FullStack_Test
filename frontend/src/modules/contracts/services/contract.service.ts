@@ -1,6 +1,9 @@
 import { api } from '@/common/services/api.service';
-import type { Contract, ContractsSummary, ContractStatus, ContractType, PaginatedResponse } from '@/common/types';
-import type { ContractFormData, ContractItemFormData } from '@/common/utils/validations';
+import type { Contract, ContractStatus, ContractType } from '@/common/types/contract.type';
+import type { ContractsSummary } from '@/common/types/contracts-summary.type';
+import type { PaginatedResponse } from '@/common/types/paginated-response.type';
+import type { ContractFormData } from '@/modules/contracts/schemas/contract.schema';
+import type { ContractItemFormData } from '@/modules/contracts/schemas/contract-item.schema';
 
 interface ListContractsParams {
   page?: number;

@@ -1,4 +1,4 @@
-import { Button } from '@/common/components/ui/button';
+import { Button } from '@/components/ui/button';
 import type { HeaderModel } from './header.model';
 
 export const HeaderView = ({ userName, onLogout }: HeaderModel) => {

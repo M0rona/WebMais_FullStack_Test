@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/common/hooks/use-auth';
-import { loginSchema, type LoginFormData } from '@/common/utils/validations';
+import { loginSchema, type LoginFormData } from '@/modules/auth/schemas/login.schema';
 
 export const useLoginModel = () => {
   const { login, isLoggingIn } = useAuth();

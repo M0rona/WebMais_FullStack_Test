@@ -3,9 +3,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import type { Client } from '@/common/types';
+import type { Client } from '@/common/types/client.type';
 import { getErrorMessage } from '@/common/utils/error-handler';
-import { clientSchema, type ClientFormData } from '@/common/utils/validations';
+import { clientSchema, type ClientFormData } from '@/modules/clients/schemas/client.schema';
 import { clientService } from '../../services/client.service';
 
 interface ClientFormDialogProps {

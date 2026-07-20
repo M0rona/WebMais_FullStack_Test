@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { useForm } from 'react-hook-form';
 import { describe, expect, it } from 'vitest';
-import type { ContractFormData } from '@/common/utils/validations';
+import type { ContractFormData } from '@/modules/contracts/schemas/contract.schema';
 import { useContractItemListModel } from './contract-item-list.model';
 
 function setup(items: ContractFormData['items']) {

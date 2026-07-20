@@ -1,6 +1,6 @@
-import { Badge } from '@/common/components/ui/badge';
+import { Badge } from '@/components/ui/badge';
 import { CONTRACT_STATUS_LABELS } from '@/common/constants';
-import type { ContractStatus } from '@/common/types';
+import type { ContractStatus } from '@/common/types/contract.type';
 
 const STATUS_VARIANT: Record<ContractStatus, 'default' | 'secondary' | 'destructive' | 'outline'> = {
   DRAFT: 'outline',

@@ -1,4 +1,4 @@
-import type { ContractStatus, ContractType } from '@/common/types';
+import type { ContractStatus, ContractType } from '@/common/types/contract.type';
 
 export const CONTRACT_STATUS_LABELS: Record<ContractStatus, string> = {
   DRAFT: 'Rascunho',

@@ -1,10 +1,10 @@
 import { Trash2 } from 'lucide-react';
 import type { FieldErrors, UseFormRegister } from 'react-hook-form';
-import { Button } from '@/common/components/ui/button';
-import { Input } from '@/common/components/ui/input';
-import { Label } from '@/common/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { formatCurrency } from '@/common/utils/formatters';
-import type { ContractFormData } from '@/common/utils/validations';
+import type { ContractFormData } from '@/modules/contracts/schemas/contract.schema';
 import type { ContractItemListModel } from './contract-item-list.model';
 
 type ContractItemListViewProps = ContractItemListModel & {

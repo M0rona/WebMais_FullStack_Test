@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Button } from '@/common/components/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -7,9 +7,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/common/components/ui/dialog';
-import { Input } from '@/common/components/ui/input';
-import { Label } from '@/common/components/ui/label';
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import type { ClientFormDialogModel } from './client-form-dialog.model';
 
 type ClientFormDialogViewProps = ClientFormDialogModel & {

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { Contract } from '@/common/types';
+import type { Contract } from '@/common/types/contract.type';
 import { useContractFormDialogModel } from './contract-form-dialog.model';
 import { ContractFormDialogView } from './contract-form-dialog.view';
 

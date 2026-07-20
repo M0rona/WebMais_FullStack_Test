@@ -1,5 +1,5 @@
 import type { Control, FieldErrors, UseFormRegister } from 'react-hook-form';
-import type { ContractFormData } from '@/common/utils/validations';
+import type { ContractFormData } from '@/modules/contracts/schemas/contract.schema';
 import { useContractItemListModel } from './contract-item-list.model';
 import { ContractItemListView } from './contract-item-list.view';
 

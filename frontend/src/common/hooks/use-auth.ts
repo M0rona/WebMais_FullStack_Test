@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { authService } from '@/modules/auth/services/auth.service';
 import { useAuthStore } from '@/store/auth-store';
 import { getErrorMessage } from '@/common/utils/error-handler';
-import type { LoginFormData } from '@/common/utils/validations';
+import type { LoginFormData } from '@/modules/auth/schemas/login.schema';
 
 export const useAuth = () => {
   const { user, token, setAuth, clearAuth } = useAuthStore();

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { Client } from '@/common/types';
+import type { Client } from '@/common/types/client.type';
 import { useClientFormDialogModel } from './client-form-dialog.model';
 import { ClientFormDialogView } from './client-form-dialog.view';
 

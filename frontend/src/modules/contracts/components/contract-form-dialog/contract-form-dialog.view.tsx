@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Controller } from 'react-hook-form';
-import { Button } from '@/common/components/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -8,16 +8,16 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/common/components/ui/dialog';
-import { Input } from '@/common/components/ui/input';
-import { Label } from '@/common/components/ui/label';
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/common/components/ui/select';
+} from '@/components/ui/select';
 import { CONTRACT_TYPE_LABELS } from '@/common/constants';
 import ContractItemList from '../contract-item-list';
 import type { ContractFormDialogModel } from './contract-form-dialog.model';

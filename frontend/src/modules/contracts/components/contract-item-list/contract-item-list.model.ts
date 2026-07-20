@@ -1,5 +1,5 @@
 import { useFieldArray, useWatch, type Control } from 'react-hook-form';
-import type { ContractFormData } from '@/common/utils/validations';
+import type { ContractFormData } from '@/modules/contracts/schemas/contract.schema';
 
 interface ContractItemListProps {
   control: Control<ContractFormData>;

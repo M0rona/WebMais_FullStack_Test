@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import type { ContractStatus } from '@/common/types';
+import type { ContractStatus } from '@/common/types/contract.type';
 import { getErrorMessage } from '@/common/utils/error-handler';
 import { contractService } from '../../services/contract.service';
 
