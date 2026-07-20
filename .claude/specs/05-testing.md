@@ -5,6 +5,14 @@ obrigatório — ver `.claude/specs/00-overview.md`), não um extra condicional.
 
 ## Backend (Jest)
 
+Transform via **ts-jest**, não `@swc/jest`. SWC continua sendo o builder do
+`nest-cli.json` (build/dev, rápido), mas `@swc/jest` entra em pânico (bug no
+renderizador de diagnósticos `miette` do swc) ao compilar o client gerado do
+Prisma 7 dentro de um `Test.createTestingModule` do Nest — reproduzido de
+forma isolada, não é algo do nosso código. Como já pinamos TypeScript 5.9
+(compatível com o teto `<7` do `ts-jest`), usar `ts-jest` só para testes
+evita o bug sem abrir mão de nada.
+
 **Unitários dos services** — o alvo principal, maior retorno por esforço:
 
 - `contracts.service`: transições de status (`DRAFT→ACTIVE` exige item,
@@ -12,10 +20,14 @@ obrigatório — ver `.claude/specs/00-overview.md`), não um extra condicional.
   aprovar sem item), recálculo de `value` a partir dos itens, comportamento
   de cache-aside (mockar `RedisService`: hit não chama o repository, miss
   chama e grava, escrita invalida).
-- `clients.service`: bloqueio de exclusão com contrato vinculado (mockar
-  erro de FK do Prisma e verificar que vira `BadRequestException`).
+- `clients.service`: bloqueio de exclusão com contrato vinculado — verifica
+  a contagem de contratos do cliente antes de excluir (não depende de
+  capturar erro de FK do driver).
 - `auth.service`: hash de senha, rejeição de credencial inválida, geração de
   token.
+- `document.util` (validador de CPF/CNPJ): função pura, fácil 100% de
+  cobertura — CPF/CNPJ válido, dígito verificador errado, todos os dígitos
+  iguais, tamanho inválido.
 - Repository e Prisma são mockados nos testes de service — service é a
   unidade sob teste, não o banco.
 

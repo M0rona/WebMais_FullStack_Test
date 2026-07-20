@@ -26,7 +26,11 @@ infra/
 - Guard JWT global (`JwtAuthGuard` aplicado via `APP_GUARD` em `AppModule`,
   como no CodeHammer) + decorator `@Public()` nas rotas de auth.
 - Payload do JWT: `{ sub: userId, email }`, expiração configurável via env
-  `JWT_EXPIRES_IN` (default `8h`).
+  `JWT_EXPIRES_IN_HOURS` (número, default `8`). Não é `JWT_EXPIRES_IN` como
+  string tipo `"8h"`: o tipo de `expiresIn` do `@nestjs/jwt` só aceita
+  `number` (segundos) ou o literal de template da lib `ms` — um `string`
+  genérico vindo do `ConfigService` não tipa. `common/utils/jwt.util.ts`
+  converte horas → segundos.
 - `GET /auth/me` — retorna o usuário autenticado (usado pelo frontend para
   restaurar sessão a partir do token salvo).
 
@@ -39,9 +43,13 @@ CRUD completo:
 - `GET /clients` — lista clientes (usado no select do form de contrato).
 - `GET /clients/:id` — detalhe.
 - `PATCH /clients/:id` — edita `name`/`document`.
-- `DELETE /clients/:id` — remove cliente; se houver contrato vinculado, o
-  Postgres rejeita por FK (`onDelete: Restrict`) — o service captura e
-  relança como `BadRequestException('Cliente possui contratos vinculados e não pode ser excluído')`.
+- `DELETE /clients/:id` — remove cliente. O service verifica proativamente
+  (`countContracts`) se há contrato vinculado antes de excluir e lança
+  `BadRequestException('Cliente possui contratos vinculados e não pode ser excluído')`
+  nesse caso — preferido a deixar o Postgres rejeitar por FK
+  (`onDelete: Restrict`, que continua existindo como rede de segurança) e
+  capturar o erro do driver, porque não depende de parsear código de erro
+  específico do Postgres/Prisma.
 
 ## Contracts
 
@@ -83,18 +91,19 @@ antes de retornar.
   escrita de contrato/item e ao final da execução do job de expiração.
 - Chave `contracts:list:<page>:<limit>:<status ?? 'all'>:<type ?? 'all'>` —
   TTL curto (ex. 30-60s), mesma invalidação.
-- Padrão no service:
+- Padrão no service, usando os helpers de `RedisService`
+  (`getJson`/`setJson`/`deleteByPrefix`, que fazem `JSON.parse`/`stringify` e
+  `EX` por baixo dos panos):
   ```ts
-  const cached = await this.redis.get(key);
-  if (cached) return JSON.parse(cached);
+  const cached = await this.redis.getJson<T>(key);
+  if (cached) return cached;
   const data = await this.repository.findMany(filters);
-  await this.redis.set(key, JSON.stringify(data), 'EX', TTL_SECONDS);
+  await this.redis.setJson(key, data, CONTRACTS_CACHE_TTL_SECONDS);
   return data;
   ```
-- Invalidação: `await this.redis.del(key)` (ou `keys('contracts:list:*')` +
-  `del` em lote se cachear múltiplas combinações de filtro — para o volume
-  deste teste, um `del` por padrão de chave conhecida é suficiente; evitar
-  `KEYS` em produção real, mas aceitável aqui dado o escopo).
+- Invalidação: `this.redis.deleteByPrefix('contracts:list:')` (usa `KEYS` +
+  `DEL` em lote — aceitável no volume deste teste, evitar em produção real)
+  e `this.redis.del(CONTRACTS_SUMMARY_CACHE_KEY)`.
 
 ## Job assíncrono (BullMQ)
 
@@ -119,9 +128,13 @@ antes de retornar.
 ## Erros e validação
 
 - Pipe global `ZodValidationPipe` (`nestjs-zod`).
-- Filtros globais de exception (`AllExceptionsFilter` + `HttpExceptionFilter`,
-  padrão do CodeHammer) — resposta de erro sempre
-  `{ statusCode, timestamp, path, method, message }`.
+- Um único `AllExceptionsFilter` global (`@Catch()`) trata tanto
+  `HttpException` quanto erros genéricos — resposta de erro sempre
+  `{ statusCode, timestamp, path, method, message }`. O CodeHammer registra
+  dois filtros (`AllExceptionsFilter` + `HttpExceptionFilter`), mas como
+  `AllExceptionsFilter` é registrado primeiro e usa `@Catch()` sem argumento,
+  ele intercepta tudo — o segundo filtro nunca é alcançado (código morto no
+  projeto de referência). Aqui um filtro só, correto, sem essa duplicação.
 - Mensagens de validação e de negócio em português.
 
 ## Variáveis de ambiente (`backend/.env`)
@@ -130,7 +143,7 @@ antes de retornar.
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/webmais?schema=public
 REDIS_URL=redis://localhost:6379
 JWT_SECRET=
-JWT_EXPIRES_IN=8h
+JWT_EXPIRES_IN_HOURS=8
 EXPIRE_JOB_INTERVAL_MS=60000
 PORT=3000
 FRONTEND_URL=http://localhost:5173

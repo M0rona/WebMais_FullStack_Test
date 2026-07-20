@@ -2,14 +2,28 @@
 
 ## Schema
 
+O Prisma 7 mudou a arquitetura do client: motor Rust removido, driver adapter
+obrigatório, e a URL de conexão não fica mais no `datasource` do schema — vai
+em `backend/prisma.config.ts` (`defineConfig` de `prisma/config`, campo
+`datasource.url`). O `generator` usa `provider = "prisma-client"` com
+`output` explícito (aqui, `../generated/prisma`, **não versionado no Git** —
+regenerado via `prisma generate`, que já roda automaticamente no
+`postinstall`). O runtime instancia o client com `@prisma/adapter-pg`:
+
+```ts
+// src/infra/prisma/prisma.service.ts (resumo)
+const adapter = new PrismaPg({ connectionString: configService.getOrThrow('DATABASE_URL') });
+super({ adapter });
+```
+
 ```prisma
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
