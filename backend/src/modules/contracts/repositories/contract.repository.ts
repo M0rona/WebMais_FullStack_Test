@@ -31,11 +31,6 @@ const CONTRACT_INCLUDE = { client: true, items: true } as const;
 export class ContractRepository {
   constructor(private prisma: PrismaService) {}
 
-  /**
-   * Usa uma sequence do Postgres (criada na migration) para gerar o número do
-   * contrato de forma atômica, evitando corrida entre criações concorrentes que
-   * um simples `count() + 1` teria.
-   */
   async generateNumber(): Promise<string> {
     const rows = await this.prisma.$queryRawUnsafe<Array<{ nextval: bigint | number | string }>>(
       `SELECT nextval('${CONTRACT_NUMBER_SEQUENCE}')`,

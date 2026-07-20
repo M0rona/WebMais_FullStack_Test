@@ -83,6 +83,28 @@ Ver `backend/.env.example` e `frontend/.env.example`.
 - [x] Itens do contrato: múltiplos itens por contrato, valor total sempre
       derivado da soma dos itens (nunca um campo editável direto)
 
+## Decisões técnicas
+
+- **Client gerado do Prisma vive dentro de `src/`** (`src/generated/prisma`,
+  reexportado por um barrel único em `backend/src/infra/prisma/prisma-client.ts`
+  — todo o resto do app importa daqui, não do caminho gerado diretamente, então
+  se o Prisma mudar o output de novo só esse arquivo muda). O motivo de ficar
+  dentro de `src/` e não em `backend/generated/` (mais convencional) é que o
+  build de produção usa SWC (via `nest-cli.json`), e o SWC só compila o
+  diretório `src/` — um client gerado fora dele não entra no `dist/`, e
+  `node dist/main.js` quebra em produção com "module not found". Isso foi
+  descoberto testando o boot real da aplicação compilada, não assumido de
+  antemão.
+- **Número do contrato usa uma sequence do Postgres (`contract_number_seq`),
+  não `count() + 1`**: `ContractRepository.generateNumber()` faz
+  `SELECT nextval('contract_number_seq')`, que o Postgres garante ser atômico
+  entre conexões concorrentes. Um `count() + 1` (ou até um `findFirst` +
+  incremento em JS) tem uma janela de corrida real — duas criações de
+  contrato ao mesmo tempo podem ler a mesma contagem antes de qualquer uma
+  escrever, gerando números duplicados. A sequence é criada manualmente na
+  migration inicial (`CREATE SEQUENCE "contract_number_seq" START 1;`), já
+  que não existe um jeito idiomático de declarar isso no `schema.prisma`.
+
 ## Uso de IA
 
 Todo o projeto foi desenvolvido com o **Claude Code**, de forma bem
