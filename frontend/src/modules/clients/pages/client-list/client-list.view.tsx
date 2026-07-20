@@ -1,14 +1,3 @@
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -21,10 +10,11 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { formatDocument } from '@/common/utils/formatters';
+import ClientDeleteDialog from '../../components/client-delete-dialog';
 import ClientFormDialog from '../../components/client-form-dialog';
 import type { ClientListModel } from './client-list.model';
 
-export const ClientListView = ({ clients, isLoading, onDelete }: ClientListModel) => {
+export const ClientListView = ({ clients, isLoading }: ClientListModel) => {
   return (
     <div className="container mx-auto max-w-4xl px-4 py-8">
       <div className="mb-6 flex items-center justify-between">
@@ -67,28 +57,14 @@ export const ClientListView = ({ clients, isLoading, onDelete }: ClientListModel
                           </Button>
                         }
                       />
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
+                      <ClientDeleteDialog
+                        clientId={client.id}
+                        trigger={
                           <Button variant="destructive" size="sm">
                             Excluir
                           </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Excluir cliente?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Essa ação não pode ser desfeita. Clientes com contratos vinculados não podem
-                              ser excluídos.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => onDelete(client.id)}>
-                              Excluir
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                        }
+                      />
                     </TableCell>
                   </TableRow>
                 ))}

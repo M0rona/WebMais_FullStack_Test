@@ -14,35 +14,16 @@ export const useContractListModel = () => {
     queryFn: () => contractService.findAll({ status: statusFilter, limit: 50 }),
   });
 
-  const invalidate = () => {
-    void queryClient.invalidateQueries({ queryKey: ['contracts'] });
-  };
-
   const approveMutation = useMutation({
+    mutationKey: ['contracts', 'approve'],
     mutationFn: (id: string) => contractService.approve(id),
     onSuccess: () => {
       toast.success('Contrato aprovado');
-      invalidate();
     },
     onError: (error) => toast.error(getErrorMessage(error)),
-  });
-
-  const closeMutation = useMutation({
-    mutationFn: (id: string) => contractService.close(id),
-    onSuccess: () => {
-      toast.success('Contrato encerrado');
-      invalidate();
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: ['contracts'] });
     },
-    onError: (error) => toast.error(getErrorMessage(error)),
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => contractService.delete(id),
-    onSuccess: () => {
-      toast.success('Contrato excluído');
-      invalidate();
-    },
-    onError: (error) => toast.error(getErrorMessage(error)),
   });
 
   return {
@@ -51,8 +32,6 @@ export const useContractListModel = () => {
     statusFilter,
     onFilterChange: setStatusFilter,
     onApprove: (id: string) => approveMutation.mutate(id),
-    onClose: (id: string) => closeMutation.mutate(id),
-    onDelete: (id: string) => deleteMutation.mutate(id),
   };
 };
 

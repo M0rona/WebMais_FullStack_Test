@@ -1,14 +1,3 @@
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -21,6 +10,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { formatCurrency, formatDate } from '@/common/utils/formatters';
+import ContractCloseDialog from '../../components/contract-close-dialog';
+import ContractDeleteDialog from '../../components/contract-delete-dialog';
 import ContractFormDialog from '../../components/contract-form-dialog';
 import ContractSummaryCards from '../../components/contract-summary-cards';
 import { ContractStatusBadge } from '../../components/contract-status-badge';
@@ -33,8 +24,6 @@ export const ContractListView = ({
   statusFilter,
   onFilterChange,
   onApprove,
-  onClose,
-  onDelete,
 }: ContractListModel) => {
   return (
     <div className="container mx-auto max-w-6xl space-y-6 px-4 py-8">
@@ -102,49 +91,25 @@ export const ContractListView = ({
                       )}
 
                       {(contract.status === 'ACTIVE' || contract.status === 'EXPIRED') && (
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
+                        <ContractCloseDialog
+                          contractId={contract.id}
+                          contractNumber={contract.number}
+                          trigger={
                             <Button size="sm" variant="secondary">
                               Encerrar
                             </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Encerrar contrato?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                O contrato {contract.number} será marcado como encerrado. Essa ação não
-                                pode ser desfeita.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => onClose(contract.id)}>
-                                Encerrar
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                          }
+                        />
                       )}
 
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
+                      <ContractDeleteDialog
+                        contractId={contract.id}
+                        trigger={
                           <Button size="sm" variant="destructive">
                             Excluir
                           </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Excluir contrato?</AlertDialogTitle>
-                            <AlertDialogDescription>Essa ação não pode ser desfeita.</AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => onDelete(contract.id)}>
-                              Excluir
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                        }
+                      />
                     </TableCell>
                   </TableRow>
                 ))}
