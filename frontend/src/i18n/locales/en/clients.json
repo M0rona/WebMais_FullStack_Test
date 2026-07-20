@@ -1,0 +1,37 @@
+{
+  "list": {
+    "title": "Clients",
+    "newClient": "New client",
+    "registered": "Registered clients",
+    "empty": "No clients registered.",
+    "columns": {
+      "name": "Name",
+      "document": "Document"
+    }
+  },
+  "form": {
+    "newTitle": "New client",
+    "editTitle": "Edit client",
+    "name": "Name",
+    "document": "CPF/CNPJ",
+    "documentPlaceholder": "Numbers only"
+  },
+  "deleteDialog": {
+    "title": "Delete client?",
+    "description": "This action cannot be undone. Clients with linked contracts cannot be deleted."
+  },
+  "validation": {
+    "name": {
+      "min": "Name must be at least 2 characters long"
+    },
+    "document": {
+      "invalid": "Invalid document",
+      "format": "Document must contain only numbers (CPF or CNPJ)"
+    }
+  },
+  "toasts": {
+    "created": "Client registered",
+    "updated": "Client updated",
+    "deleted": "Client deleted"
+  }
+}

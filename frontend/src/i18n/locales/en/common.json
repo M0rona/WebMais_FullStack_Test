@@ -1,0 +1,30 @@
+{
+  "appTitle": "WebMais — Contract Management",
+  "nav": {
+    "contracts": "Contracts",
+    "clients": "Clients"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "logout": "Log out",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "table": {
+    "actions": "Actions",
+    "loading": "Loading...",
+    "pageOf": "Page {{page}} of {{totalPages}}"
+  },
+  "language": {
+    "label": "Language",
+    "pt-BR": "Português",
+    "en": "English"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "sessionExpired": "Session expired. Please log in again."
+  }
+}

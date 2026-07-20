@@ -1,5 +1,5 @@
 import axios, { type AxiosError } from 'axios';
-import { ERROR_MESSAGES } from '@/common/constants';
+import i18next from '@/i18n';
 
 interface ApiErrorBody {
   message?: string | string[];
@@ -12,5 +12,5 @@ export function getErrorMessage(error: unknown): string {
       return Array.isArray(body.message) ? body.message[0] : body.message;
     }
   }
-  return ERROR_MESSAGES.GENERIC;
+  return i18next.t('common:errors.generic');
 }

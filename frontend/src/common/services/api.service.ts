@@ -1,7 +1,7 @@
 import axios, { type AxiosError } from 'axios';
 import { toast } from 'sonner';
-import { ERROR_MESSAGES } from '@/common/constants';
 import { getErrorMessage } from '@/common/utils/error-handler';
+import i18next from '@/i18n';
 import { useAuthStore } from '@/store/auth-store';
 
 export const api = axios.create({
@@ -13,6 +13,7 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  config.headers['Accept-Language'] = i18next.language;
   return config;
 });
 
@@ -21,7 +22,7 @@ api.interceptors.response.use(
   (error: AxiosError) => {
     if (error.response?.status === 401) {
       useAuthStore.getState().clearAuth();
-      toast.error(ERROR_MESSAGES.SESSION_EXPIRED);
+      toast.error(i18next.t('common:errors.sessionExpired'));
       window.location.href = '/login';
       return Promise.reject(error);
     }

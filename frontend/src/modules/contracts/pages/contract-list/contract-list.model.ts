@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import type { ContractStatus, ContractType } from '@/common/types/contract.type';
 import { getErrorMessage } from '@/common/utils/error-handler';
@@ -13,6 +14,7 @@ export const useContractListModel = () => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const queryClient = useQueryClient();
+  const { t } = useTranslation('contracts');
 
   const { data, isLoading } = useQuery({
     queryKey: ['contracts', { status: statusFilter, type: typeFilter, search, page }],
@@ -45,7 +47,7 @@ export const useContractListModel = () => {
     mutationKey: ['contracts', 'approve'],
     mutationFn: (id: string) => contractService.approve(id),
     onSuccess: () => {
-      toast.success('Contrato aprovado');
+      toast.success(t('toasts.approved'));
     },
     onError: (error) => toast.error(getErrorMessage(error)),
     onSettled: () => {

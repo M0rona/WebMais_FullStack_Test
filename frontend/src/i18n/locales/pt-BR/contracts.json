@@ -1,0 +1,108 @@
+{
+  "list": {
+    "title": "Contratos",
+    "newContract": "Novo contrato",
+    "cardTitle": "Lista de contratos",
+    "searchPlaceholder": "Buscar por número do contrato ou cliente",
+    "allStatuses": "Todos os status",
+    "allTypes": "Todos os tipos",
+    "statusPlaceholder": "Status",
+    "typePlaceholder": "Tipo",
+    "empty": "Nenhum contrato encontrado.",
+    "columns": {
+      "number": "Número",
+      "client": "Cliente",
+      "type": "Tipo",
+      "value": "Valor",
+      "dueDate": "Vencimento",
+      "status": "Status"
+    },
+    "actions": {
+      "approve": "Aprovar",
+      "close": "Encerrar"
+    }
+  },
+  "summary": {
+    "draft": "Rascunho",
+    "active": "Ativos",
+    "expired": "Vencidos",
+    "closed": "Encerrados"
+  },
+  "status": {
+    "DRAFT": "Rascunho",
+    "ACTIVE": "Ativo",
+    "EXPIRED": "Vencido",
+    "CLOSED": "Encerrado"
+  },
+  "type": {
+    "SERVICE": "Prestação de serviço",
+    "SUPPLY": "Fornecimento",
+    "LEASE": "Locação"
+  },
+  "form": {
+    "newTitle": "Novo contrato",
+    "editTitle": "Editar contrato",
+    "client": "Cliente",
+    "type": "Tipo",
+    "dueDate": "Vencimento"
+  },
+  "items": {
+    "title": "Itens do contrato",
+    "add": "Adicionar item",
+    "description": "Descrição",
+    "descriptionPlaceholder": "Descrição do item",
+    "quantity": "Quantidade",
+    "unitValue": "Valor unitário",
+    "total": "Total",
+    "actions": "Ações",
+    "totalLabel": "Total: {{value}}"
+  },
+  "closeDialog": {
+    "title": "Encerrar contrato?",
+    "description": "O contrato {{number}} será marcado como encerrado. Essa ação não pode ser desfeita.",
+    "confirm": "Encerrar"
+  },
+  "deleteDialog": {
+    "title": "Excluir contrato?",
+    "description": "Essa ação não pode ser desfeita."
+  },
+  "clientPicker": {
+    "placeholder": "Selecionar cliente",
+    "title": "Selecionar cliente",
+    "searchPlaceholder": "Buscar por nome ou documento",
+    "empty": "Nenhum cliente encontrado.",
+    "columns": {
+      "name": "Nome",
+      "document": "Documento"
+    }
+  },
+  "validation": {
+    "client": {
+      "required": "Selecione um cliente"
+    },
+    "dueDate": {
+      "required": "Informe o vencimento"
+    },
+    "items": {
+      "min": "Adicione ao menos um item"
+    },
+    "item": {
+      "description": {
+        "required": "Descrição obrigatória"
+      },
+      "quantity": {
+        "positive": "Quantidade deve ser positiva"
+      },
+      "unitValue": {
+        "positive": "Valor deve ser positivo"
+      }
+    }
+  },
+  "toasts": {
+    "created": "Contrato criado",
+    "updated": "Contrato atualizado",
+    "deleted": "Contrato excluído",
+    "approved": "Contrato aprovado",
+    "closed": "Contrato encerrado"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "list": {
+    "title": "Clientes",
+    "newClient": "Novo cliente",
+    "registered": "Clientes cadastrados",
+    "empty": "Nenhum cliente cadastrado.",
+    "columns": {
+      "name": "Nome",
+      "document": "Documento"
+    }
+  },
+  "form": {
+    "newTitle": "Novo cliente",
+    "editTitle": "Editar cliente",
+    "name": "Nome",
+    "document": "CPF/CNPJ",
+    "documentPlaceholder": "Somente números"
+  },
+  "deleteDialog": {
+    "title": "Excluir cliente?",
+    "description": "Essa ação não pode ser desfeita. Clientes com contratos vinculados não podem ser excluídos."
+  },
+  "validation": {
+    "name": {
+      "min": "Nome deve ter no mínimo 2 caracteres"
+    },
+    "document": {
+      "invalid": "Documento inválido",
+      "format": "Documento deve conter apenas números (CPF ou CNPJ)"
+    }
+  },
+  "toasts": {
+    "created": "Cliente cadastrado",
+    "updated": "Cliente atualizado",
+    "deleted": "Cliente excluído"
+  }
+}

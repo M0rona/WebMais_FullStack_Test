@@ -1,4 +1,5 @@
 import { Search } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/common/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -18,9 +19,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { CONTRACT_STATUS_LABELS, CONTRACT_TYPE_LABELS } from '@/common/constants';
 import type { ContractStatus, ContractType } from '@/common/types/contract.type';
 import { formatCurrency, formatDate } from '@/common/utils/formatters';
+import { useContractStatusLabels, useContractTypeLabels } from '../../hooks/use-contract-labels';
 import ContractCloseDialog from '../../components/contract-close-dialog';
 import ContractDeleteDialog from '../../components/contract-delete-dialog';
 import ContractFormDialog from '../../components/contract-form-dialog';
@@ -46,25 +47,30 @@ export const ContractListView = ({
   onPageChange,
   onApprove,
 }: ContractListModel) => {
+  const { t } = useTranslation('contracts');
+  const { t: tCommon } = useTranslation('common');
+  const statusLabels = useContractStatusLabels();
+  const typeLabels = useContractTypeLabels();
+
   return (
     <div className="container mx-auto max-w-6xl space-y-6 px-4 py-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Contratos</h1>
-        <ContractFormDialog trigger={<Button>Novo contrato</Button>} />
+        <h1 className="text-2xl font-semibold">{t('list.title')}</h1>
+        <ContractFormDialog trigger={<Button>{t('list.newContract')}</Button>} />
       </div>
 
       <ContractSummaryCards selectedStatus={statusFilter} onSelectStatus={onFilterChange} />
 
       <Card>
         <CardHeader>
-          <CardTitle>Lista de contratos</CardTitle>
+          <CardTitle>{t('list.cardTitle')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <div className="relative flex-1">
               <Search className="pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Buscar por número do contrato ou cliente"
+                placeholder={t('list.searchPlaceholder')}
                 className="pl-8"
                 value={search}
                 onChange={(event) => onSearchChange(event.target.value)}
@@ -78,11 +84,11 @@ export const ContractListView = ({
               }
             >
               <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Status" />
+                <SelectValue placeholder={t('list.statusPlaceholder')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={STATUS_FILTER_VALUE}>Todos os status</SelectItem>
-                {Object.entries(CONTRACT_STATUS_LABELS).map(([value, label]) => (
+                <SelectItem value={STATUS_FILTER_VALUE}>{t('list.allStatuses')}</SelectItem>
+                {Object.entries(statusLabels).map(([value, label]) => (
                   <SelectItem key={value} value={value}>
                     {label}
                   </SelectItem>
@@ -97,11 +103,11 @@ export const ContractListView = ({
               }
             >
               <SelectTrigger className="w-full sm:w-[200px]">
-                <SelectValue placeholder="Tipo" />
+                <SelectValue placeholder={t('list.typePlaceholder')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={TYPE_FILTER_VALUE}>Todos os tipos</SelectItem>
-                {Object.entries(CONTRACT_TYPE_LABELS).map(([value, label]) => (
+                <SelectItem value={TYPE_FILTER_VALUE}>{t('list.allTypes')}</SelectItem>
+                {Object.entries(typeLabels).map(([value, label]) => (
                   <SelectItem key={value} value={value}>
                     {label}
                   </SelectItem>
@@ -116,18 +122,18 @@ export const ContractListView = ({
               <Skeleton className="h-8 w-full" />
             </div>
           ) : contracts.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nenhum contrato encontrado.</p>
+            <p className="text-sm text-muted-foreground">{t('list.empty')}</p>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Número</TableHead>
-                  <TableHead>Cliente</TableHead>
-                  <TableHead>Tipo</TableHead>
-                  <TableHead>Valor</TableHead>
-                  <TableHead>Vencimento</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Ações</TableHead>
+                  <TableHead>{t('list.columns.number')}</TableHead>
+                  <TableHead>{t('list.columns.client')}</TableHead>
+                  <TableHead>{t('list.columns.type')}</TableHead>
+                  <TableHead>{t('list.columns.value')}</TableHead>
+                  <TableHead>{t('list.columns.dueDate')}</TableHead>
+                  <TableHead>{t('list.columns.status')}</TableHead>
+                  <TableHead className="text-right">{tCommon('table.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -149,7 +155,7 @@ export const ContractListView = ({
                           contract={contract}
                           trigger={
                             <Button variant="outline" size="sm">
-                              Editar
+                              {tCommon('actions.edit')}
                             </Button>
                           }
                         />
@@ -157,7 +163,7 @@ export const ContractListView = ({
 
                       {contract.status === 'DRAFT' && (
                         <Button size="sm" onClick={() => onApprove(contract.id)}>
-                          Aprovar
+                          {t('list.actions.approve')}
                         </Button>
                       )}
 
@@ -167,7 +173,7 @@ export const ContractListView = ({
                           contractNumber={contract.number}
                           trigger={
                             <Button size="sm" variant="secondary">
-                              Encerrar
+                              {t('list.actions.close')}
                             </Button>
                           }
                         />
@@ -177,7 +183,7 @@ export const ContractListView = ({
                         contractId={contract.id}
                         trigger={
                           <Button size="sm" variant="destructive">
-                            Excluir
+                            {tCommon('actions.delete')}
                           </Button>
                         }
                       />
@@ -196,10 +202,10 @@ export const ContractListView = ({
                 disabled={page <= 1}
                 onClick={() => onPageChange(page - 1)}
               >
-                Anterior
+                {tCommon('actions.previous')}
               </Button>
               <span className="text-sm text-muted-foreground">
-                Página {page} de {totalPages}
+                {tCommon('table.pageOf', { page, totalPages })}
               </span>
               <Button
                 variant="outline"
@@ -207,7 +213,7 @@ export const ContractListView = ({
                 disabled={page >= totalPages}
                 onClick={() => onPageChange(page + 1)}
               >
-                Próxima
+                {tCommon('actions.next')}
               </Button>
             </div>
           )}

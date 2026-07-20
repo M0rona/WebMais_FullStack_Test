@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import type { Contract } from '@/common/types/contract.type';
 import { getErrorMessage } from '@/common/utils/error-handler';
@@ -15,6 +16,7 @@ interface ContractFormDialogProps {
 export const useContractFormDialogModel = ({ contract }: ContractFormDialogProps) => {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
+  const { t } = useTranslation('contracts');
   const isEditing = !!contract;
 
   const form = useForm<ContractFormData>({
@@ -94,7 +96,7 @@ export const useContractFormDialogModel = ({ contract }: ContractFormDialogProps
       return contractService.findOne(contract.id);
     },
     onSuccess: () => {
-      toast.success(isEditing ? 'Contrato atualizado' : 'Contrato criado');
+      toast.success(isEditing ? t('toasts.updated') : t('toasts.created'));
       invalidate();
       closeAndReset();
     },

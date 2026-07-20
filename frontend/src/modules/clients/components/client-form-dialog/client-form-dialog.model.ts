@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import type { Client } from '@/common/types/client.type';
 import { getErrorMessage } from '@/common/utils/error-handler';
@@ -15,6 +16,7 @@ interface ClientFormDialogProps {
 export const useClientFormDialogModel = ({ client }: ClientFormDialogProps) => {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
+  const { t } = useTranslation('clients');
   const isEditing = !!client;
 
   const form = useForm<ClientFormData>({
@@ -27,7 +29,7 @@ export const useClientFormDialogModel = ({ client }: ClientFormDialogProps) => {
     mutationFn: (data: ClientFormData) =>
       isEditing ? clientService.update(client.id, data) : clientService.create(data),
     onSuccess: () => {
-      toast.success(isEditing ? 'Cliente atualizado' : 'Cliente cadastrado');
+      toast.success(isEditing ? t('toasts.updated') : t('toasts.created'));
       void queryClient.invalidateQueries({ queryKey: ['clients'] });
       setOpen(false);
       form.reset();

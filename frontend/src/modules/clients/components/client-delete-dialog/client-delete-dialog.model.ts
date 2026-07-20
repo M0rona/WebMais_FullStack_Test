@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { getErrorMessage } from '@/common/utils/error-handler';
 import { clientService } from '../../services/client.service';
@@ -9,12 +10,13 @@ interface ClientDeleteDialogProps {
 
 export const useClientDeleteDialogModel = ({ clientId }: ClientDeleteDialogProps) => {
   const queryClient = useQueryClient();
+  const { t } = useTranslation('clients');
 
   const mutation = useMutation({
     mutationKey: ['clients', 'delete'],
     mutationFn: () => clientService.delete(clientId),
     onSuccess: () => {
-      toast.success('Cliente excluído');
+      toast.success(t('toasts.deleted'));
     },
     onError: (error) => {
       toast.error(getErrorMessage(error));

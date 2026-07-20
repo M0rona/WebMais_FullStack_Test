@@ -1,8 +1,10 @@
 import { Trash2 } from 'lucide-react';
 import type { Control, FieldErrors, UseFormRegister } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/common/components/button';
 import { InputField } from '@/common/components/input-field';
 import { NumberField } from '@/common/components/number-field';
+import { translateError } from '@/common/utils/translate-error';
 import { Label } from '@/components/ui/label';
 import { formatCurrency } from '@/common/utils/formatters';
 import type { ContractFormData } from '@/modules/contracts/schemas/contract.schema';
@@ -24,16 +26,20 @@ export const ContractItemListView = ({
   register,
   errors,
 }: ContractItemListViewProps) => {
+  const { t } = useTranslation('contracts');
+
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <Label>Itens do contrato</Label>
+        <Label>{t('items.title')}</Label>
         <Button type="button" variant="outline" size="sm" onClick={onAddItem}>
-          Adicionar item
+          {t('items.add')}
         </Button>
       </div>
 
-      {errors?.root && <p className="text-sm text-destructive">{errors.root.message}</p>}
+      {errors?.root && (
+        <p className="text-sm text-destructive">{translateError(t, errors.root.message)}</p>
+      )}
 
       <div className="space-y-3">
         {fields.map((field, index) => {
@@ -44,10 +50,10 @@ export const ContractItemListView = ({
           return (
             <div key={field.id} className="space-y-3 rounded-md border p-3">
               <InputField
-                label="Descrição"
+                label={t('items.description')}
                 required
-                placeholder="Descrição do item"
-                error={errors?.[index]?.description?.message}
+                placeholder={t('items.descriptionPlaceholder')}
+                error={translateError(t, errors?.[index]?.description?.message)}
                 {...register(`items.${index}.description`)}
               />
 
@@ -55,27 +61,27 @@ export const ContractItemListView = ({
                 <NumberField
                   control={control}
                   name={`items.${index}.quantity`}
-                  label="Quantidade"
+                  label={t('items.quantity')}
                   required
                   placeholder="0"
-                  error={errors?.[index]?.quantity?.message}
+                  error={translateError(t, errors?.[index]?.quantity?.message)}
                 />
                 <NumberField
                   control={control}
                   name={`items.${index}.unitValue`}
-                  label="Valor unitário"
+                  label={t('items.unitValue')}
                   required
                   placeholder="0,00"
-                  error={errors?.[index]?.unitValue?.message}
+                  error={translateError(t, errors?.[index]?.unitValue?.message)}
                 />
                 <div className="space-y-2">
-                  <Label>Total</Label>
+                  <Label>{t('items.total')}</Label>
                   <div className="flex h-8 items-center text-sm text-muted-foreground">
                     {formatCurrency(subtotal)}
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label className="invisible">Ações</Label>
+                  <Label className="invisible">{t('items.actions')}</Label>
                   <Button
                     type="button"
                     variant="ghost"
@@ -92,7 +98,9 @@ export const ContractItemListView = ({
         })}
       </div>
 
-      <div className="flex justify-end text-sm font-medium">Total: {formatCurrency(total)}</div>
+      <div className="flex justify-end text-sm font-medium">
+        {t('items.totalLabel', { value: formatCurrency(total) })}
+      </div>
     </div>
   );
 };

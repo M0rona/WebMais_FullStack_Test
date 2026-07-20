@@ -1,21 +1,33 @@
+import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import type { HeaderModel } from './header.model';
 
-const NAV_ITEMS = [
-  { to: '/contracts', label: 'Contratos' },
-  { to: '/clients', label: 'Clientes' },
-];
+const SUPPORTED_LANGUAGES = ['pt-BR', 'en'] as const;
 
-export const HeaderView = ({ userName, onLogout }: HeaderModel) => {
+export const HeaderView = ({ userName, onLogout, language, onLanguageChange }: HeaderModel) => {
+  const { t } = useTranslation();
+
+  const navItems = [
+    { to: '/contracts', label: t('nav.contracts') },
+    { to: '/clients', label: t('nav.clients') },
+  ];
+
   return (
     <header className="border-b">
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-6">
-          <span className="font-semibold">WebMais — Gestão de Contratos</span>
+          <span className="font-semibold">{t('appTitle')}</span>
           <nav className="flex items-center gap-4">
-            {NAV_ITEMS.map(({ to, label }) => (
+            {navItems.map(({ to, label }) => (
               <NavLink
                 key={to}
                 to={to}
@@ -32,9 +44,21 @@ export const HeaderView = ({ userName, onLogout }: HeaderModel) => {
           </nav>
         </div>
         <div className="flex items-center gap-4">
+          <Select value={language} onValueChange={onLanguageChange}>
+            <SelectTrigger className="w-[130px]" aria-label={t('language.label')}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {SUPPORTED_LANGUAGES.map((lang) => (
+                <SelectItem key={lang} value={lang}>
+                  {t(`language.${lang}`)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <span className="text-sm text-muted-foreground">{userName}</span>
           <Button variant="outline" size="sm" onClick={onLogout}>
-            Sair
+            {t('actions.logout')}
           </Button>
         </div>
       </div>

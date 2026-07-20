@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react';
 import { Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/common/components/button';
 import { InputField } from '@/common/components/input-field';
+import { translateError } from '@/common/utils/translate-error';
 import {
   Dialog,
   DialogContent,
@@ -18,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { CONTRACT_TYPE_LABELS } from '@/common/constants';
+import { useContractTypeLabels } from '../../hooks/use-contract-labels';
 import ClientPickerDialog from '../client-picker-dialog';
 import ContractItemList from '../contract-item-list';
 import type { ContractFormDialogModel } from './contract-form-dialog.model';
@@ -36,6 +38,9 @@ export const ContractFormDialogView = ({
   isEditing,
   isSubmitting,
 }: ContractFormDialogViewProps) => {
+  const { t } = useTranslation('contracts');
+  const { t: tCommon } = useTranslation('common');
+  const typeLabels = useContractTypeLabels();
   const {
     register,
     control,
@@ -47,12 +52,12 @@ export const ContractFormDialogView = ({
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="flex max-h-[85vh] max-w-3xl flex-col">
         <DialogHeader>
-          <DialogTitle>{isEditing ? 'Editar contrato' : 'Novo contrato'}</DialogTitle>
+          <DialogTitle>{isEditing ? t('form.editTitle') : t('form.newTitle')}</DialogTitle>
         </DialogHeader>
         <form onSubmit={onSubmit} className="flex min-h-0 flex-1 flex-col gap-4">
           <div className="grid shrink-0 grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Cliente</Label>
+              <Label>{t('form.client')}</Label>
               <Controller
                 control={control}
                 name="clientId"
@@ -60,11 +65,15 @@ export const ContractFormDialogView = ({
                   <ClientPickerDialog value={field.value} onChange={field.onChange} />
                 )}
               />
-              {errors.clientId && <p className="text-sm text-destructive">{errors.clientId.message}</p>}
+              {errors.clientId && (
+                <p className="text-sm text-destructive">
+                  {translateError(t, errors.clientId.message)}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
-              <Label>Tipo</Label>
+              <Label>{t('form.type')}</Label>
               <Controller
                 control={control}
                 name="type"
@@ -74,7 +83,7 @@ export const ContractFormDialogView = ({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {Object.entries(CONTRACT_TYPE_LABELS).map(([value, label]) => (
+                      {Object.entries(typeLabels).map(([value, label]) => (
                         <SelectItem key={value} value={value}>
                           {label}
                         </SelectItem>
@@ -88,10 +97,10 @@ export const ContractFormDialogView = ({
 
           <div className="shrink-0">
             <InputField
-              label="Vencimento"
+              label={t('form.dueDate')}
               required
               type="date"
-              error={errors.dueDate?.message}
+              error={translateError(t, errors.dueDate?.message)}
               {...register('dueDate')}
             />
           </div>
@@ -102,7 +111,7 @@ export const ContractFormDialogView = ({
 
           <DialogFooter className="shrink-0">
             <Button type="submit" loading={isSubmitting}>
-              Salvar
+              {tCommon('actions.save')}
             </Button>
           </DialogFooter>
         </form>

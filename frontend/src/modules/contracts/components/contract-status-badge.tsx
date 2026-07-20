@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
-import { CONTRACT_STATUS_LABELS } from '@/common/constants';
 import type { ContractStatus } from '@/common/types/contract.type';
+import { useContractStatusLabels } from '@/modules/contracts/hooks/use-contract-labels';
 
 const STATUS_VARIANT: Record<ContractStatus, 'default' | 'secondary' | 'destructive' | 'outline'> = {
   DRAFT: 'outline',
@@ -9,6 +9,7 @@ const STATUS_VARIANT: Record<ContractStatus, 'default' | 'secondary' | 'destruct
   CLOSED: 'secondary',
 };
 
-export const ContractStatusBadge = ({ status }: { status: ContractStatus }) => (
-  <Badge variant={STATUS_VARIANT[status]}>{CONTRACT_STATUS_LABELS[status]}</Badge>
-);
+export const ContractStatusBadge = ({ status }: { status: ContractStatus }) => {
+  const labels = useContractStatusLabels();
+  return <Badge variant={STATUS_VARIANT[status]}>{labels[status]}</Badge>;
+};

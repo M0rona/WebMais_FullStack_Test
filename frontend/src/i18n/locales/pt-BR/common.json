@@ -1,0 +1,30 @@
+{
+  "appTitle": "WebMais — Gestão de Contratos",
+  "nav": {
+    "contracts": "Contratos",
+    "clients": "Clientes"
+  },
+  "actions": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "logout": "Sair",
+    "previous": "Anterior",
+    "next": "Próxima"
+  },
+  "table": {
+    "actions": "Ações",
+    "loading": "Carregando...",
+    "pageOf": "Página {{page}} de {{totalPages}}"
+  },
+  "language": {
+    "label": "Idioma",
+    "pt-BR": "Português",
+    "en": "English"
+  },
+  "errors": {
+    "generic": "Algo deu errado. Tente novamente.",
+    "sessionExpired": "Sessão expirada. Faça login novamente."
+  }
+}

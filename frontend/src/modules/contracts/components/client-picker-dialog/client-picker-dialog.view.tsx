@@ -1,4 +1,5 @@
 import { Search } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/common/components/button';
 import {
   Dialog,
@@ -29,22 +30,25 @@ export const ClientPickerDialogView = ({
   selectedClient,
   onSelect,
 }: ClientPickerDialogModel) => {
+  const { t } = useTranslation('contracts');
+  const { t: tCommon } = useTranslation('common');
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         <Button type="button" variant="outline" className="w-full justify-start font-normal">
-          {selectedClient ? selectedClient.name : 'Selecionar cliente'}
+          {selectedClient ? selectedClient.name : t('clientPicker.placeholder')}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Selecionar cliente</DialogTitle>
+          <DialogTitle>{t('clientPicker.title')}</DialogTitle>
         </DialogHeader>
         <div className="space-y-3">
           <div className="relative">
             <Search className="pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Buscar por nome ou documento"
+              placeholder={t('clientPicker.searchPlaceholder')}
               className="pl-8"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
@@ -55,21 +59,21 @@ export const ClientPickerDialogView = ({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Nome</TableHead>
-                  <TableHead>Documento</TableHead>
+                  <TableHead>{t('clientPicker.columns.name')}</TableHead>
+                  <TableHead>{t('clientPicker.columns.document')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
                   <TableRow>
                     <TableCell colSpan={2} className="text-center text-sm text-muted-foreground">
-                      Carregando...
+                      {tCommon('table.loading')}
                     </TableCell>
                   </TableRow>
                 ) : filteredClients.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={2} className="text-center text-sm text-muted-foreground">
-                      Nenhum cliente encontrado.
+                      {t('clientPicker.empty')}
                     </TableCell>
                   </TableRow>
                 ) : (

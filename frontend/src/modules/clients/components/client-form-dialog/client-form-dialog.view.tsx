@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/common/components/button';
 import { InputField } from '@/common/components/input-field';
+import { translateError } from '@/common/utils/translate-error';
 import {
   Dialog,
   DialogContent,
@@ -24,6 +26,8 @@ export const ClientFormDialogView = ({
   isEditing,
   isSubmitting,
 }: ClientFormDialogViewProps) => {
+  const { t } = useTranslation('clients');
+  const { t: tCommon } = useTranslation('common');
   const {
     register,
     formState: { errors },
@@ -34,20 +38,25 @@ export const ClientFormDialogView = ({
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{isEditing ? 'Editar cliente' : 'Novo cliente'}</DialogTitle>
+          <DialogTitle>{isEditing ? t('form.editTitle') : t('form.newTitle')}</DialogTitle>
         </DialogHeader>
         <form onSubmit={onSubmit} className="space-y-4">
-          <InputField label="Nome" required error={errors.name?.message} {...register('name')} />
           <InputField
-            label="CPF/CNPJ"
+            label={t('form.name')}
             required
-            placeholder="Somente números"
-            error={errors.document?.message}
+            error={translateError(t, errors.name?.message)}
+            {...register('name')}
+          />
+          <InputField
+            label={t('form.document')}
+            required
+            placeholder={t('form.documentPlaceholder')}
+            error={translateError(t, errors.document?.message)}
             {...register('document')}
           />
           <DialogFooter>
             <Button type="submit" loading={isSubmitting}>
-              Salvar
+              {tCommon('actions.save')}
             </Button>
           </DialogFooter>
         </form>

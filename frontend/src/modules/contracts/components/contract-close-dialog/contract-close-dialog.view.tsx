@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,19 +23,22 @@ export const ContractCloseDialogView = ({
   contractNumber,
   onConfirm,
 }: ContractCloseDialogViewProps) => {
+  const { t } = useTranslation('contracts');
+  const { t: tCommon } = useTranslation('common');
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Encerrar contrato?</AlertDialogTitle>
+          <AlertDialogTitle>{t('closeDialog.title')}</AlertDialogTitle>
           <AlertDialogDescription>
-            O contrato {contractNumber} será marcado como encerrado. Essa ação não pode ser desfeita.
+            {t('closeDialog.description', { number: contractNumber })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>Encerrar</AlertDialogAction>
+          <AlertDialogCancel>{tCommon('actions.cancel')}</AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm}>{t('closeDialog.confirm')}</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -1,9 +1,11 @@
+import i18next from '@/i18n';
+
 export function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+  return new Intl.NumberFormat(i18next.language, { style: 'currency', currency: 'BRL' }).format(value);
 }
 
 export function formatDate(value: string | Date): string {
-  return new Intl.DateTimeFormat('pt-BR').format(new Date(value));
+  return new Intl.DateTimeFormat(i18next.language).format(new Date(value));
 }
 
 export function formatDocument(document: string): string {

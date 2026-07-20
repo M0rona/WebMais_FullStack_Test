@@ -1,7 +1,8 @@
 import { Badge } from '@/components/ui/badge';
-import { CONTRACT_TYPE_LABELS } from '@/common/constants';
 import type { ContractType } from '@/common/types/contract.type';
+import { useContractTypeLabels } from '@/modules/contracts/hooks/use-contract-labels';
 
-export const ContractTypeBadge = ({ type }: { type: ContractType }) => (
-  <Badge variant="outline">{CONTRACT_TYPE_LABELS[type]}</Badge>
-);
+export const ContractTypeBadge = ({ type }: { type: ContractType }) => {
+  const labels = useContractTypeLabels();
+  return <Badge variant="outline">{labels[type]}</Badge>;
+};

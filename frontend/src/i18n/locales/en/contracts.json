@@ -1,0 +1,108 @@
+{
+  "list": {
+    "title": "Contracts",
+    "newContract": "New contract",
+    "cardTitle": "Contract list",
+    "searchPlaceholder": "Search by contract number or client",
+    "allStatuses": "All statuses",
+    "allTypes": "All types",
+    "statusPlaceholder": "Status",
+    "typePlaceholder": "Type",
+    "empty": "No contracts found.",
+    "columns": {
+      "number": "Number",
+      "client": "Client",
+      "type": "Type",
+      "value": "Value",
+      "dueDate": "Due date",
+      "status": "Status"
+    },
+    "actions": {
+      "approve": "Approve",
+      "close": "Close"
+    }
+  },
+  "summary": {
+    "draft": "Draft",
+    "active": "Active",
+    "expired": "Expired",
+    "closed": "Closed"
+  },
+  "status": {
+    "DRAFT": "Draft",
+    "ACTIVE": "Active",
+    "EXPIRED": "Expired",
+    "CLOSED": "Closed"
+  },
+  "type": {
+    "SERVICE": "Service",
+    "SUPPLY": "Supply",
+    "LEASE": "Lease"
+  },
+  "form": {
+    "newTitle": "New contract",
+    "editTitle": "Edit contract",
+    "client": "Client",
+    "type": "Type",
+    "dueDate": "Due date"
+  },
+  "items": {
+    "title": "Contract items",
+    "add": "Add item",
+    "description": "Description",
+    "descriptionPlaceholder": "Item description",
+    "quantity": "Quantity",
+    "unitValue": "Unit value",
+    "total": "Total",
+    "actions": "Actions",
+    "totalLabel": "Total: {{value}}"
+  },
+  "closeDialog": {
+    "title": "Close contract?",
+    "description": "Contract {{number}} will be marked as closed. This action cannot be undone.",
+    "confirm": "Close"
+  },
+  "deleteDialog": {
+    "title": "Delete contract?",
+    "description": "This action cannot be undone."
+  },
+  "clientPicker": {
+    "placeholder": "Select client",
+    "title": "Select client",
+    "searchPlaceholder": "Search by name or document",
+    "empty": "No clients found.",
+    "columns": {
+      "name": "Name",
+      "document": "Document"
+    }
+  },
+  "validation": {
+    "client": {
+      "required": "Select a client"
+    },
+    "dueDate": {
+      "required": "Enter the due date"
+    },
+    "items": {
+      "min": "Add at least one item"
+    },
+    "item": {
+      "description": {
+        "required": "Description is required"
+      },
+      "quantity": {
+        "positive": "Quantity must be positive"
+      },
+      "unitValue": {
+        "positive": "Value must be positive"
+      }
+    }
+  },
+  "toasts": {
+    "created": "Contract created",
+    "updated": "Contract updated",
+    "deleted": "Contract deleted",
+    "approved": "Contract approved",
+    "closed": "Contract closed"
+  }
+}

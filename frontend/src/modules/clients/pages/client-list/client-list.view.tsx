@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -15,16 +16,19 @@ import ClientFormDialog from '../../components/client-form-dialog';
 import type { ClientListModel } from './client-list.model';
 
 export const ClientListView = ({ clients, isLoading }: ClientListModel) => {
+  const { t } = useTranslation('clients');
+  const { t: tCommon } = useTranslation('common');
+
   return (
     <div className="container mx-auto max-w-4xl px-4 py-8">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Clientes</h1>
-        <ClientFormDialog trigger={<Button>Novo cliente</Button>} />
+        <h1 className="text-2xl font-semibold">{t('list.title')}</h1>
+        <ClientFormDialog trigger={<Button>{t('list.newClient')}</Button>} />
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Clientes cadastrados</CardTitle>
+          <CardTitle>{t('list.registered')}</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -33,14 +37,14 @@ export const ClientListView = ({ clients, isLoading }: ClientListModel) => {
               <Skeleton className="h-8 w-full" />
             </div>
           ) : clients.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nenhum cliente cadastrado.</p>
+            <p className="text-sm text-muted-foreground">{t('list.empty')}</p>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Nome</TableHead>
-                  <TableHead>Documento</TableHead>
-                  <TableHead className="text-right">Ações</TableHead>
+                  <TableHead>{t('list.columns.name')}</TableHead>
+                  <TableHead>{t('list.columns.document')}</TableHead>
+                  <TableHead className="text-right">{tCommon('table.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -53,7 +57,7 @@ export const ClientListView = ({ clients, isLoading }: ClientListModel) => {
                         client={client}
                         trigger={
                           <Button variant="outline" size="sm">
-                            Editar
+                            {tCommon('actions.edit')}
                           </Button>
                         }
                       />
@@ -61,7 +65,7 @@ export const ClientListView = ({ clients, isLoading }: ClientListModel) => {
                         clientId={client.id}
                         trigger={
                           <Button variant="destructive" size="sm">
-                            Excluir
+                            {tCommon('actions.delete')}
                           </Button>
                         }
                       />
