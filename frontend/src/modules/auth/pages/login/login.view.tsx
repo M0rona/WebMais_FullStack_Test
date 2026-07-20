@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Button } from '@/common/components/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -37,6 +38,12 @@ export const LoginView = ({ form, onSubmit, isLoggingIn }: LoginModel) => {
             <Button type="submit" className="w-full" loading={isLoggingIn}>
               Entrar
             </Button>
+            <p className="text-center text-sm text-muted-foreground">
+              Não tem conta?{' '}
+              <Link to="/register" className="text-primary underline-offset-4 hover:underline">
+                Cadastre-se
+              </Link>
+            </p>
           </form>
         </CardContent>
       </Card>
