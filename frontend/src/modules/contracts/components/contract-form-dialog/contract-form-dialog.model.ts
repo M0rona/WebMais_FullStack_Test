@@ -44,6 +44,7 @@ export const useContractFormDialogModel = ({ contract }: ContractFormDialogProps
   };
 
   const mutation = useMutation({
+    mutationKey: ['contracts', isEditing ? 'update' : 'create'],
     mutationFn: async (data: ContractFormData) => {
       const dueDate = new Date(`${data.dueDate}T00:00:00`).toISOString();
 

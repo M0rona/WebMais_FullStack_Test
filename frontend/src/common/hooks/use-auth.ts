@@ -10,6 +10,7 @@ export const useAuth = () => {
   const queryClient = useQueryClient();
 
   const loginMutation = useMutation({
+    mutationKey: ['auth', 'login'],
     mutationFn: (data: LoginFormData) => authService.login(data),
     onSuccess: (data) => {
       setAuth(data);

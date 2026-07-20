@@ -18,7 +18,7 @@ export const useLoginModel = () => {
       await login(data);
       navigate('/contracts');
     } catch {
-      // erro já tratado via toast pelo interceptor do axios
+      // noop
     }
   });
 

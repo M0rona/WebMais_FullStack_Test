@@ -23,6 +23,7 @@ export const useClientFormDialogModel = ({ client }: ClientFormDialogProps) => {
   });
 
   const mutation = useMutation({
+    mutationKey: ['clients', isEditing ? 'update' : 'create'],
     mutationFn: (data: ClientFormData) =>
       isEditing ? clientService.update(client.id, data) : clientService.create(data),
     onSuccess: () => {
