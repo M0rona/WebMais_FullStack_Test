@@ -146,6 +146,27 @@ integrada ao processo (não só autocomplete pontual). Resumo honesto de como:
   mover specs para dentro de `.claude/`, promover os diferenciais de
   "bônus condicional" para escopo obrigatório) e cobrei disciplina de
   commits pequenos por unidade lógica várias vezes ao longo da sessão.
+- **Rodada de revisão pós-entrega**: depois da entrega inicial, fiz uma
+  revisão manual de código (back e front) e levantei ~40 pontos — bugs reais
+  encontrados testando a UI, pedidos de reestruturação e perguntas de
+  arquitetura. Antes de qualquer mudança, pedi um plano discutido e revisado
+  em conjunto (Plan Mode), executado depois em fases por múltiplos agentes em
+  paralelo (backend e reestruturação de frontend simultâneos, componentes de
+  contrato depois). Cada bug relatado foi confirmado por causa raiz no
+  código antes do fix, e revalidado ao vivo no navegador depois — não só
+  "parece resolvido".
+- **i18n bilíngue (pt-BR/en)**, adicionado por último de propósito (depois da
+  base estabilizada): `nestjs-i18n` no backend, `react-i18next` no frontend,
+  idioma padrão pela localidade do navegador. Um bug real apareceu na
+  verificação ao vivo: com `nonExplicitSupportedLngs: true`, o i18next reduz
+  qualquer código pra sua parte de idioma (`pt-BR` → `pt`) antes de checar
+  contra `supportedLngs` — como minha lista usava o código completo
+  (`['pt-BR', 'en']`), `pt-BR` deixava de bater com ela mesma, zerando a
+  hierarquia de resolução e fazendo todo `t()` cair no fallback (a chave
+  crua) mesmo com os recursos carregados corretamente na store interna. Só
+  foi encontrado inspecionando o estado da instância de i18next ao vivo no
+  navegador (`i18n.services.languageUtils.toResolveHierarchy(...)`), não
+  seria visível só lendo o código.
 
 ## Enunciado original do desafio
 
