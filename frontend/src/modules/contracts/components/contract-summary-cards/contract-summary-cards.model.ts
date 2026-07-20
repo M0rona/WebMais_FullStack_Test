@@ -4,7 +4,7 @@ import { contractService } from '../../services/contract.service';
 export const useContractSummaryCardsModel = () => {
   const { data, isLoading } = useQuery({
     queryKey: ['contracts', 'summary'],
-    queryFn: contractService.summary,
+    queryFn: () => contractService.summary(),
   });
 
   return {

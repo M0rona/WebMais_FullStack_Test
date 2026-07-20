@@ -13,7 +13,7 @@ export const useClientPickerDialogModel = ({ value, onChange }: ClientPickerDial
 
   const { data: clients = [], isLoading } = useQuery({
     queryKey: ['clients'],
-    queryFn: clientService.findAll,
+    queryFn: () => clientService.findAll(),
     enabled: open,
   });
 

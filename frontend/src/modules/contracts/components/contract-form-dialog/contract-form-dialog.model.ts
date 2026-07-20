@@ -36,6 +36,24 @@ export const useContractFormDialogModel = ({ contract }: ContractFormDialogProps
     void queryClient.invalidateQueries({ queryKey: ['contracts'] });
   };
 
+  // Fecha o dialog e limpa o form (valores E erros de validação). Precisa
+  // rodar tanto ao fechar manualmente (X/overlay/Escape) quanto após salvar
+  // com sucesso — sem isso, fechar o dialog depois de um Salvar com campos
+  // vazios (validação client-side, sem chegar a chamar a mutation) deixa os
+  // erros de formState.errors presos no form, que reaparecem ao reabrir.
+  const closeAndReset = () => {
+    setOpen(false);
+    form.reset();
+  };
+
+  const onOpenChange = (next: boolean) => {
+    if (next) {
+      setOpen(true);
+    } else {
+      closeAndReset();
+    }
+  };
+
   const mutation = useMutation({
     mutationKey: ['contracts', isEditing ? 'update' : 'create'],
     mutationFn: async (data: ContractFormData) => {
@@ -78,8 +96,7 @@ export const useContractFormDialogModel = ({ contract }: ContractFormDialogProps
     onSuccess: () => {
       toast.success(isEditing ? 'Contrato atualizado' : 'Contrato criado');
       invalidate();
-      setOpen(false);
-      form.reset();
+      closeAndReset();
     },
     onError: (error) => {
       toast.error(getErrorMessage(error));
@@ -88,7 +105,7 @@ export const useContractFormDialogModel = ({ contract }: ContractFormDialogProps
 
   const onSubmit = form.handleSubmit((data) => mutation.mutate(data));
 
-  return { open, setOpen, form, onSubmit, isEditing, isSubmitting: mutation.isPending };
+  return { open, onOpenChange, form, onSubmit, isEditing, isSubmitting: mutation.isPending };
 };
 
 export type ContractFormDialogModel = ReturnType<typeof useContractFormDialogModel>;

@@ -30,7 +30,7 @@ type ContractFormDialogViewProps = ContractFormDialogModel & {
 export const ContractFormDialogView = ({
   trigger,
   open,
-  setOpen,
+  onOpenChange,
   form,
   onSubmit,
   isEditing,
@@ -43,7 +43,7 @@ export const ContractFormDialogView = ({
   } = form;
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="flex max-h-[85vh] max-w-3xl flex-col">
         <DialogHeader>

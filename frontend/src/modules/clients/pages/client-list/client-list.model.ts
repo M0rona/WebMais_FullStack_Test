@@ -4,7 +4,7 @@ import { clientService } from '../../services/client.service';
 export const useClientListModel = () => {
   const { data: clients, isLoading } = useQuery({
     queryKey: ['clients'],
-    queryFn: clientService.findAll,
+    queryFn: () => clientService.findAll(),
   });
 
   return {
