@@ -31,8 +31,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
       : HttpStatus.INTERNAL_SERVER_ERROR;
     const message = isHttpException ? this.extractMessage(exception) : 'Erro interno do servidor';
 
-    // status é sempre um código HTTP genérico (não restrito aos membros do enum
-    // HttpStatus), então comparamos com o literal em vez do enum.
     if (!isHttpException || status >= 500) {
       this.logger.error(
         `${request.method} ${request.url} - ${status}`,

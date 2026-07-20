@@ -24,7 +24,6 @@ export class ExpireContractsScheduler implements OnModuleInit {
       Number(this.configService.get<string>('EXPIRE_JOB_INTERVAL_MS')) ||
       DEFAULT_EXPIRE_JOB_INTERVAL_MS;
 
-    // jobId fixo: reagendar com o mesmo id não duplica o job repetível a cada restart.
     await this.queue.add(
       EXPIRE_CONTRACTS_JOB_NAME,
       {},
