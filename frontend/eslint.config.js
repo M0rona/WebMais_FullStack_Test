@@ -21,4 +21,10 @@ export default tseslint.config(
       '@typescript-eslint/no-explicit-any': 'error',
     },
   },
+  // Componentes gerados pelo shadcn CLI: código vendorizado, não escrito por nós — não
+  // vale a pena manter na mesma régua estrita do resto do projeto (ex.: exportar a
+  // variant junto do componente no mesmo arquivo é o próprio padrão do shadcn). Precisa
+  // vir depois do bloco acima: configs flat são mescladas em ordem, e o último que casar
+  // com o arquivo vence.
+  { files: ['src/common/components/ui/**/*.tsx'], rules: { 'react-refresh/only-export-components': 'off' } },
 );

@@ -86,7 +86,11 @@ export default <Nome>;
 6. Prefira compor com componentes shadcn já instalados em
    `common/components/ui/`. Se faltar um componente shadcn necessário, rode
    `npx shadcn@latest add <componente>` dentro de `frontend/` em vez de
-   escrevê-lo à mão.
+   escrevê-lo à mão. **Bug conhecido do CLI neste ambiente (Windows/git-bash,
+   shadcn 4.13.1):** ele cria os arquivos numa pasta `@/` literal na raiz de
+   `frontend/` em vez de resolver o alias para `src/`. Depois de rodar
+   `shadcn add`, sempre confira se apareceu uma pasta `@/` — se sim, mova o
+   conteúdo para `src/common/components/ui/` e apague a pasta `@/`.
 7. Se o `.model.ts` tem lógica não trivial (validação, cálculo, transformação
    de dados, condicional de UI), escreva um teste com Vitest +
    `@testing-library/react` (`renderHook`), mockando os services — o model é
