@@ -1,4 +1,4 @@
-import { api } from '@/common/services/api.service';
+import { HttpService } from '@/common/services/http.service';
 import type { Contract, ContractStatus, ContractType } from '@/common/types/contract.type';
 import type { ContractsSummary } from '@/common/types/contracts-summary.type';
 import type { PaginatedResponse } from '@/common/types/paginated-response.type';
@@ -12,65 +12,53 @@ interface ListContractsParams {
   type?: ContractType;
 }
 
-export const contractService = {
-  findAll: async (params?: ListContractsParams): Promise<PaginatedResponse<Contract>> => {
-    const response = await api.get<PaginatedResponse<Contract>>('/contracts', { params });
-    return response.data;
-  },
+class ContractService extends HttpService {
+  findAll(params?: ListContractsParams): Promise<PaginatedResponse<Contract>> {
+    return this.get<PaginatedResponse<Contract>>('/contracts', { params });
+  }
 
-  summary: async (): Promise<ContractsSummary> => {
-    const response = await api.get<ContractsSummary>('/contracts/summary');
-    return response.data;
-  },
+  summary(): Promise<ContractsSummary> {
+    return this.get<ContractsSummary>('/contracts/summary');
+  }
 
-  findOne: async (id: string): Promise<Contract> => {
-    const response = await api.get<Contract>(`/contracts/${id}`);
-    return response.data;
-  },
+  findOne(id: string): Promise<Contract> {
+    return this.get<Contract>(`/contracts/${id}`);
+  }
 
-  create: async (data: ContractFormData & { dueDate: string }): Promise<Contract> => {
-    const response = await api.post<Contract>('/contracts', data);
-    return response.data;
-  },
+  create(data: ContractFormData & { dueDate: string }): Promise<Contract> {
+    return this.post<Contract>('/contracts', data);
+  }
 
-  update: async (
+  update(
     id: string,
     data: { clientId: string; type: ContractFormData['type']; dueDate: string },
-  ): Promise<Contract> => {
-    const response = await api.patch<Contract>(`/contracts/${id}`, data);
-    return response.data;
-  },
+  ): Promise<Contract> {
+    return this.patch<Contract>(`/contracts/${id}`, data);
+  }
 
-  delete: async (id: string): Promise<void> => {
-    await api.delete(`/contracts/${id}`);
-  },
+  delete<T = void>(id: string): Promise<T> {
+    return super.delete<T>(`/contracts/${id}`);
+  }
 
-  approve: async (id: string): Promise<Contract> => {
-    const response = await api.post<Contract>(`/contracts/${id}/approve`);
-    return response.data;
-  },
+  approve(id: string): Promise<Contract> {
+    return this.post<Contract>(`/contracts/${id}/approve`);
+  }
 
-  close: async (id: string): Promise<Contract> => {
-    const response = await api.post<Contract>(`/contracts/${id}/close`);
-    return response.data;
-  },
+  close(id: string): Promise<Contract> {
+    return this.post<Contract>(`/contracts/${id}/close`);
+  }
 
-  addItem: async (contractId: string, item: ContractItemFormData): Promise<Contract> => {
-    const response = await api.post<Contract>(`/contracts/${contractId}/items`, item);
-    return response.data;
-  },
+  addItem(contractId: string, item: ContractItemFormData): Promise<Contract> {
+    return this.post<Contract>(`/contracts/${contractId}/items`, item);
+  }
 
-  updateItem: async (
-    contractId: string,
-    itemId: string,
-    item: ContractItemFormData,
-  ): Promise<Contract> => {
-    const response = await api.patch<Contract>(`/contracts/${contractId}/items/${itemId}`, item);
-    return response.data;
-  },
+  updateItem(contractId: string, itemId: string, item: ContractItemFormData): Promise<Contract> {
+    return this.patch<Contract>(`/contracts/${contractId}/items/${itemId}`, item);
+  }
 
-  deleteItem: async (contractId: string, itemId: string): Promise<Contract> => {
-    const response = await api.delete<Contract>(`/contracts/${contractId}/items/${itemId}`);
-    return response.data;
-  },
-};
+  deleteItem(contractId: string, itemId: string): Promise<Contract> {
+    return super.delete<Contract>(`/contracts/${contractId}/items/${itemId}`);
+  }
+}
+
+export const contractService = new ContractService();

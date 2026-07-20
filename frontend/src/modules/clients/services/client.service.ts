@@ -1,24 +1,23 @@
-import { api } from '@/common/services/api.service';
+import { HttpService } from '@/common/services/http.service';
 import type { Client } from '@/common/types/client.type';
 import type { ClientFormData } from '@/modules/clients/schemas/client.schema';
 
-export const clientService = {
-  findAll: async (): Promise<Client[]> => {
-    const response = await api.get<Client[]>('/clients');
-    return response.data;
-  },
+class ClientService extends HttpService {
+  findAll(): Promise<Client[]> {
+    return this.get<Client[]>('/clients');
+  }
 
-  create: async (data: ClientFormData): Promise<Client> => {
-    const response = await api.post<Client>('/clients', data);
-    return response.data;
-  },
+  create(data: ClientFormData): Promise<Client> {
+    return this.post<Client>('/clients', data);
+  }
 
-  update: async (id: string, data: Partial<ClientFormData>): Promise<Client> => {
-    const response = await api.patch<Client>(`/clients/${id}`, data);
-    return response.data;
-  },
+  update(id: string, data: Partial<ClientFormData>): Promise<Client> {
+    return this.patch<Client>(`/clients/${id}`, data);
+  }
 
-  delete: async (id: string): Promise<void> => {
-    await api.delete(`/clients/${id}`);
-  },
-};
+  delete<T = void>(id: string): Promise<T> {
+    return super.delete<T>(`/clients/${id}`);
+  }
+}
+
+export const clientService = new ClientService();
