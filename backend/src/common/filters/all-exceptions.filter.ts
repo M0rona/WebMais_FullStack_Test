@@ -1,4 +1,11 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpException,
+  HttpStatus,
+  Logger,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 
 interface ErrorResponseBody {
@@ -19,10 +26,14 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
 
     const isHttpException = exception instanceof HttpException;
-    const status = isHttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
+    const status: number = isHttpException
+      ? exception.getStatus()
+      : HttpStatus.INTERNAL_SERVER_ERROR;
     const message = isHttpException ? this.extractMessage(exception) : 'Erro interno do servidor';
 
-    if (!isHttpException || status >= HttpStatus.INTERNAL_SERVER_ERROR) {
+    // status é sempre um código HTTP genérico (não restrito aos membros do enum
+    // HttpStatus), então comparamos com o literal em vez do enum.
+    if (!isHttpException || status >= 500) {
       this.logger.error(
         `${request.method} ${request.url} - ${status}`,
         exception instanceof Error ? exception.stack : String(exception),
