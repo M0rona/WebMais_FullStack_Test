@@ -17,6 +17,9 @@ export const clientSchema = z.object({
 export type ClientFormData = z.infer<typeof clientSchema>;
 
 export const contractItemSchema = z.object({
+  // presente para itens já existentes (edição); ausente para itens novos — é assim que o
+  // model do form-dialog decide POST (novo) vs PATCH (existente) vs DELETE (removido).
+  id: z.string().optional(),
   description: z.string().min(2, 'Descrição obrigatória'),
   quantity: z.coerce.number().positive('Quantidade deve ser positiva'),
   unitValue: z.coerce.number().positive('Valor deve ser positivo'),
