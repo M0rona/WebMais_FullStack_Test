@@ -28,6 +28,7 @@ export const UpdateContractSchema = z.object({
 export const ListContractsQuerySchema = PaginationQuerySchema.extend({
   status: ContractStatusSchema.optional(),
   type: ContractTypeSchema.optional(),
+  search: z.string().optional(),
 });
 
 export class CreateContractDto extends createZodDto(CreateContractSchema) {}

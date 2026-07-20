@@ -70,6 +70,7 @@ export class ContractService {
     const result = await this.contractRepository.findMany({
       status: query.status,
       type: query.type,
+      search: query.search,
       page: query.page,
       limit: query.limit,
     });
@@ -216,6 +217,7 @@ export class ContractService {
   private buildListCacheKey(query: ListContractsQueryType): string {
     const status = query.status ?? 'all';
     const type = query.type ?? 'all';
-    return `${CONTRACTS_LIST_CACHE_PREFIX}${query.page}:${query.limit}:${status}:${type}`;
+    const search = query.search ?? 'all';
+    return `${CONTRACTS_LIST_CACHE_PREFIX}${query.page}:${query.limit}:${status}:${type}:${search}`;
   }
 }

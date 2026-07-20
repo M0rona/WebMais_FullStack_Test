@@ -20,6 +20,7 @@ interface CreateContractData {
 interface FindManyFilters {
   status?: ContractStatus;
   type?: ContractType;
+  search?: string;
   page: number;
   limit: number;
 }
@@ -65,17 +66,23 @@ export class ContractRepository {
   }
 
   async findMany(filters: FindManyFilters) {
-    const { page, limit, status, type } = filters;
+    const { page, limit, status, type, search } = filters;
     const skip = (page - 1) * limit;
     const where: Prisma.ContractWhereInput = {
       ...(status && { status }),
       ...(type && { type }),
+      ...(search && {
+        OR: [
+          { number: { contains: search, mode: 'insensitive' } },
+          { client: { name: { contains: search, mode: 'insensitive' } } },
+        ],
+      }),
     };
 
     const [data, total] = await Promise.all([
       this.prisma.contract.findMany({
         where,
-        include: { client: true },
+        include: { client: true, items: true },
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
