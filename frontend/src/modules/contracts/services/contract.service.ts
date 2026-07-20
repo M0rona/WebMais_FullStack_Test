@@ -10,6 +10,7 @@ interface ListContractsParams {
   limit?: number;
   status?: ContractStatus;
   type?: ContractType;
+  search?: string;
 }
 
 class ContractService extends HttpService {
