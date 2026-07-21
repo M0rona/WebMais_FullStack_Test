@@ -4,6 +4,7 @@
     "newClient": "Novo cliente",
     "registered": "Clientes cadastrados",
     "empty": "Nenhum cliente cadastrado.",
+    "searchPlaceholder": "Buscar por nome ou documento...",
     "columns": {
       "name": "Nome",
       "document": "Documento"

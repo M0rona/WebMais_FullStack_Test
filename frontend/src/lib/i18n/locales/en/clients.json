@@ -4,6 +4,7 @@
     "newClient": "New client",
     "registered": "Registered clients",
     "empty": "No clients registered.",
+    "searchPlaceholder": "Search by name or document...",
     "columns": {
       "name": "Name",
       "document": "Document"

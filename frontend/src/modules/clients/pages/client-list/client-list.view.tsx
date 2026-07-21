@@ -1,6 +1,8 @@
+import { Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/common/components/shadcn/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/common/components/shadcn/card';
+import { Input } from '@/common/components/shadcn/input';
 import { Skeleton } from '@/common/components/shadcn/skeleton';
 import {
   Table,
@@ -15,7 +17,15 @@ import ClientDeleteDialog from '../../components/client-delete-dialog';
 import ClientFormDialog from '../../components/client-form-dialog';
 import type { ClientListModel } from './client-list.model';
 
-export const ClientListView = ({ clients, isLoading }: ClientListModel) => {
+export const ClientListView = ({
+  clients,
+  isLoading,
+  search,
+  page,
+  totalPages,
+  onSearchChange,
+  onPageChange,
+}: ClientListModel) => {
   const { t } = useTranslation('clients');
   const { t: tCommon } = useTranslation('common');
 
@@ -30,7 +40,17 @@ export const ClientListView = ({ clients, isLoading }: ClientListModel) => {
         <CardHeader>
           <CardTitle>{t('list.registered')}</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
+          <div className="relative">
+            <Search className="pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder={t('list.searchPlaceholder')}
+              className="pl-8"
+              value={search}
+              onChange={(event) => onSearchChange(event.target.value)}
+            />
+          </div>
+
           {isLoading ? (
             <div className="space-y-2">
               <Skeleton className="h-8 w-full" />
@@ -74,6 +94,30 @@ export const ClientListView = ({ clients, isLoading }: ClientListModel) => {
                 ))}
               </TableBody>
             </Table>
+          )}
+
+          {totalPages > 1 && (
+            <div className="flex items-center justify-end gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page <= 1}
+                onClick={() => onPageChange(page - 1)}
+              >
+                {tCommon('actions.previous')}
+              </Button>
+              <span className="text-sm text-muted-foreground">
+                {tCommon('table.pageOf', { page, totalPages })}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page >= totalPages}
+                onClick={() => onPageChange(page + 1)}
+              >
+                {tCommon('actions.next')}
+              </Button>
+            </div>
           )}
         </CardContent>
       </Card>
