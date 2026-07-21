@@ -1,5 +1,7 @@
 # WebMais — Gestão de Contratos
 
+[![CI](https://github.com/M0rona/WebMais_FullStack_Test/actions/workflows/ci.yml/badge.svg)](https://github.com/M0rona/WebMais_FullStack_Test/actions/workflows/ci.yml)
+
 Módulo de gestão de contratos (cadastro de clientes, contratos com itens,
 controle de status Rascunho/Ativo/Vencido/Encerrado) desenvolvido para o
 teste técnico da WebMais. Enunciado original preservado no fim deste arquivo.
@@ -7,6 +9,20 @@ teste técnico da WebMais. Enunciado original preservado no fim deste arquivo.
 **Stack:** NestJS 11 + Prisma 7 (PostgreSQL) + Redis + BullMQ no backend;
 React 19 + Vite 8 + shadcn/ui (Tailwind v4) no frontend, arquitetura MVVM.
 Detalhes de arquitetura e decisões em [`.claude/specs/`](.claude/specs/).
+
+## Deploy
+
+- **Frontend**: https://web-mais-full-stack-test.vercel.app
+- **Backend**: https://webmais-backend-gpw0.onrender.com
+
+Stack de deploy: **Render** (backend via Dockerfile + Postgres gerenciado),
+**Upstash** (Redis serverless com TLS) e **Vercel** (frontend estático) — free
+tier nos três, ver justificativa em `.claude/specs/04-infra-and-delivery.md`.
+
+O backend está no free tier do Render, que hiberna depois de um tempo sem
+uso — a primeira requisição depois disso demora alguns segundos (cold start)
+enquanto o serviço acorda. Não há tela de cadastro (ver seção abaixo), então
+pra testar é preciso um usuário já existente ou registrar um via API.
 
 ## Como rodar (desenvolvimento)
 

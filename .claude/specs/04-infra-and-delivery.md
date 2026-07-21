@@ -106,18 +106,25 @@ merge.
 
 ## Deploy
 
+Publicado — ver seção "Deploy" no `README.md` (raiz) para os links.
+
 - **Backend + Postgres**: Render.com (free tier) — web service a partir do
-  `backend/Dockerfile`, banco Postgres gerenciado do próprio Render.
+  `backend/Dockerfile` (blueprint em `render.yaml`), banco Postgres gerenciado
+  do próprio Render.
 - **Redis**: Upstash (free tier, Redis serverless com TLS) — Render não tem
   mais Redis gerenciado gratuito; Upstash é o padrão de mercado para esse
   caso e funciona direto com `ioredis` via `REDIS_URL` com `rediss://`.
-- **Frontend**: Vercel — build estático do Vite, `VITE_API_URL` apontando
-  para a URL pública do backend no Render.
-- Requer contas/credenciais do próprio candidato — preparar os arquivos de
-  config (`render.yaml` ou dashboard manual, `vercel.json` se necessário) faz
-  parte da entrega; a execução do deploy em si (login, criação dos serviços)
-  é um passo manual a fazer junto, não algo que se automatiza sem acesso às
-  contas.
+  `QueueModule` precisa detectar `rediss:` e habilitar `tls: {}` na conexão do
+  BullMQ manualmente — só o `RedisService` (que passa a URL inteira pro
+  construtor do ioredis) detecta isso sozinho.
+- **Frontend**: Vercel — build estático do Vite (`frontend/vercel.json` faz o
+  rewrite de SPA), `VITE_API_URL` apontando para a URL pública do backend no
+  Render.
+- `FRONTEND_URL` (env do backend, usada no CORS) precisa bater exatamente com
+  a origin do navegador — sem barra final. O `cors` do Express compara string
+  exata contra o header `Origin`, que nunca vem com `/` no fim; `main.ts`
+  normaliza isso antes de configurar o CORS, mas o valor da env em si também
+  não deve ter barra.
 
 ## README do projeto (raiz)
 
