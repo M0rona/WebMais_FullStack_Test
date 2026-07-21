@@ -22,17 +22,21 @@ class ContractService extends HttpService {
     return this.get<ContractsSummary>('/contracts/summary');
   }
 
-  findOne(id: string): Promise<Contract> {
-    return this.get<Contract>(`/contracts/${id}`);
-  }
-
   create(data: ContractFormData & { dueDate: string }): Promise<Contract> {
     return this.post<Contract>('/contracts', data);
   }
 
+  // `items` opcional: quando enviado, o backend substitui a lista de itens
+  // do contrato inteira numa única transação (ver spec 02-backend.md),
+  // evitando N requisições sequenciais de add/update/delete por item.
   update(
     id: string,
-    data: { clientId: string; type: ContractFormData['type']; dueDate: string },
+    data: {
+      clientId: string;
+      type: ContractFormData['type'];
+      dueDate: string;
+      items?: ContractItemFormData[];
+    },
   ): Promise<Contract> {
     return this.patch<Contract>(`/contracts/${id}`, data);
   }
@@ -47,18 +51,6 @@ class ContractService extends HttpService {
 
   close(id: string): Promise<Contract> {
     return this.post<Contract>(`/contracts/${id}/close`);
-  }
-
-  addItem(contractId: string, item: ContractItemFormData): Promise<Contract> {
-    return this.post<Contract>(`/contracts/${contractId}/items`, item);
-  }
-
-  updateItem(contractId: string, itemId: string, item: ContractItemFormData): Promise<Contract> {
-    return this.patch<Contract>(`/contracts/${contractId}/items/${itemId}`, item);
-  }
-
-  deleteItem(contractId: string, itemId: string): Promise<Contract> {
-    return super.delete<Contract>(`/contracts/${contractId}/items/${itemId}`);
   }
 }
 

@@ -65,35 +65,16 @@ export const useContractFormDialogModel = ({ contract }: ContractFormDialogProps
         return contractService.create({ ...data, dueDate });
       }
 
-      await contractService.update(contract.id, {
+      // Contrato e itens (add/editar/remover) são enviados numa única
+      // requisição — o backend aplica tudo dentro de uma transação
+      // (ver ContractRepository.updateWithItems), então uma falha no meio
+      // do caminho nunca deixa o contrato com itens parcialmente alterados.
+      return contractService.update(contract.id, {
         clientId: data.clientId,
         type: data.type,
         dueDate,
+        items: data.items,
       });
-
-      const originalItemIds = new Set((contract.items ?? []).map((item) => item.id));
-      const currentItemIds = new Set(data.items.map((item) => item.id).filter(Boolean));
-
-      for (const originalId of originalItemIds) {
-        if (!currentItemIds.has(originalId)) {
-          await contractService.deleteItem(contract.id, originalId);
-        }
-      }
-
-      for (const item of data.items) {
-        const payload = {
-          description: item.description,
-          quantity: item.quantity,
-          unitValue: item.unitValue,
-        };
-        if (item.id) {
-          await contractService.updateItem(contract.id, item.id, payload);
-        } else {
-          await contractService.addItem(contract.id, payload);
-        }
-      }
-
-      return contractService.findOne(contract.id);
     },
     onSuccess: () => {
       toast.success(isEditing ? t('toasts.updated') : t('toasts.created'));
