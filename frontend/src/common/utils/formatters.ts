@@ -1,4 +1,4 @@
-import i18next from '@/i18n';
+import i18next from '@/lib/i18n';
 
 export function formatCurrency(value: number): string {
   return new Intl.NumberFormat(i18next.language, { style: 'currency', currency: 'BRL' }).format(value);

@@ -1,7 +1,7 @@
 import axios, { type AxiosError } from 'axios';
 import { toast } from 'sonner';
 import { getErrorMessage } from '@/common/utils/error-handler';
-import i18next from '@/i18n';
+import i18next from '@/lib/i18n';
 import { useAuthStore } from '@/store/auth-store';
 
 export const api = axios.create({

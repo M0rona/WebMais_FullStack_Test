@@ -15,6 +15,7 @@ infra/
   prisma/      # PrismaModule, PrismaService
   redis/       # RedisModule, RedisService (wrapper fino sobre ioredis)
   queue/       # BullMQ: registro da fila "contracts"
+  i18n/        # traduções (pt-BR/en) carregadas pelo I18nModule
 ```
 
 ## Auth

@@ -16,7 +16,7 @@ import { ContractModule } from './modules/contracts/contract.module';
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
     I18nModule.forRoot({
       fallbackLanguage: 'pt-BR',
-      loaderOptions: { path: join(__dirname, 'i18n'), watch: false },
+      loaderOptions: { path: join(__dirname, 'infra/i18n'), watch: false },
       resolvers: [AcceptLanguageResolver],
     }),
     PrismaModule,

@@ -25,7 +25,7 @@ frontend/src/
       services/contract.service.ts
   common/
     components/
-      ui/              # shadcn (button, card, dialog, table, input, ...)
+      shadcn/          # shadcn (button, card, dialog, table, input, ...)
       header/
       protected-route.tsx
     services/api.service.ts     # instância axios + interceptor de auth/erro
@@ -33,6 +33,9 @@ frontend/src/
     utils/
     types/
     constants/
+  lib/
+    utils.ts           # cn() do shadcn
+    i18n/               # bootstrap i18next + locales/{en,pt-BR}/*.json
   store/
     auth-store.ts        # zustand: user, token, setAuth, clearAuth
   App.tsx

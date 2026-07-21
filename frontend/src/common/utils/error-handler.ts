@@ -1,5 +1,5 @@
 import axios, { type AxiosError } from 'axios';
-import i18next from '@/i18n';
+import i18next from '@/lib/i18n';
 
 interface ApiErrorBody {
   message?: string | string[];
