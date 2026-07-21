@@ -1,3 +1,4 @@
+import type { UIEvent } from 'react';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useDebouncedValue } from '@/common/hooks/use-debounced-value';
@@ -5,6 +6,7 @@ import { clientService } from '@/modules/clients/services/client.service';
 
 const PAGE_LIMIT = 20;
 const SEARCH_DEBOUNCE_MS = 300;
+const SCROLL_LOAD_MORE_THRESHOLD_PX = 48;
 
 interface ClientPickerDialogProps {
   value?: string;
@@ -54,6 +56,13 @@ export const useClientPickerDialogModel = ({ value, onChange }: ClientPickerDial
     }
   };
 
+  const onScroll = (event: UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = event.currentTarget;
+    if (scrollTop + clientHeight >= scrollHeight - SCROLL_LOAD_MORE_THRESHOLD_PX) {
+      onLoadMore();
+    }
+  };
+
   return {
     open,
     onOpenChange,
@@ -62,7 +71,7 @@ export const useClientPickerDialogModel = ({ value, onChange }: ClientPickerDial
     clients,
     isLoading,
     isFetchingNextPage,
-    onLoadMore,
+    onScroll,
     selectedClient,
     onSelect,
   };

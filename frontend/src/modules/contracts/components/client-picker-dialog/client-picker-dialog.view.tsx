@@ -20,8 +20,6 @@ import {
 import { formatDocument } from '@/common/utils/formatters';
 import type { ClientPickerDialogModel } from './client-picker-dialog.model';
 
-const SCROLL_LOAD_MORE_THRESHOLD_PX = 48;
-
 export const ClientPickerDialogView = ({
   open,
   onOpenChange,
@@ -30,19 +28,12 @@ export const ClientPickerDialogView = ({
   clients,
   isLoading,
   isFetchingNextPage,
-  onLoadMore,
+  onScroll,
   selectedClient,
   onSelect,
 }: ClientPickerDialogModel) => {
   const { t } = useTranslation('contracts');
   const { t: tCommon } = useTranslation('common');
-
-  const onScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    const { scrollTop, scrollHeight, clientHeight } = event.currentTarget;
-    if (scrollTop + clientHeight >= scrollHeight - SCROLL_LOAD_MORE_THRESHOLD_PX) {
-      onLoadMore();
-    }
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
