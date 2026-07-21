@@ -18,7 +18,7 @@
         "positive": "Quantity must be positive"
       },
       "unitValue": {
-        "positive": "Unit value must be positive"
+        "positive": "Value must be positive"
       }
     }
   },

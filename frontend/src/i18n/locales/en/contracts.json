@@ -52,7 +52,7 @@
     "description": "Description",
     "descriptionPlaceholder": "Item description",
     "quantity": "Quantity",
-    "unitValue": "Unit value",
+    "unitValue": "Value",
     "total": "Total",
     "actions": "Actions",
     "totalLabel": "Total: {{value}}"
