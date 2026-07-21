@@ -6,7 +6,7 @@
     "builder": "swc",
     "typeCheck": true,
     "deleteOutDir": true,
-    "assets": ["i18n/**/*"],
+    "assets": ["infra/i18n/**/*"],
     "watchAssets": true
   }
 }
