@@ -26,7 +26,7 @@ import ContractItemList from '../contract-item-list';
 import type { ContractFormDialogModel } from './contract-form-dialog.model';
 
 type ContractFormDialogViewProps = ContractFormDialogModel & {
-  trigger: ReactNode; // só o gatilho visual, não precisa passar pelo model
+  trigger: ReactNode;
 };
 
 export const ContractFormDialogView = ({

@@ -80,10 +80,12 @@ export const ContractListView = ({
             <Select
               value={statusFilter ?? STATUS_FILTER_VALUE}
               onValueChange={(value) =>
-                onFilterChange(value === STATUS_FILTER_VALUE ? undefined : (value as ContractStatus))
+                onFilterChange(
+                  value === STATUS_FILTER_VALUE ? undefined : (value as ContractStatus),
+                )
               }
             >
-              <SelectTrigger className="w-full sm:w-[180px]">
+              <SelectTrigger className="w-full sm:w-45">
                 <SelectValue placeholder={t('list.statusPlaceholder')} />
               </SelectTrigger>
               <SelectContent>
@@ -99,10 +101,12 @@ export const ContractListView = ({
             <Select
               value={typeFilter ?? TYPE_FILTER_VALUE}
               onValueChange={(value) =>
-                onTypeFilterChange(value === TYPE_FILTER_VALUE ? undefined : (value as ContractType))
+                onTypeFilterChange(
+                  value === TYPE_FILTER_VALUE ? undefined : (value as ContractType),
+                )
               }
             >
-              <SelectTrigger className="w-full sm:w-[200px]">
+              <SelectTrigger className="w-full sm:w-50">
                 <SelectValue placeholder={t('list.typePlaceholder')} />
               </SelectTrigger>
               <SelectContent>

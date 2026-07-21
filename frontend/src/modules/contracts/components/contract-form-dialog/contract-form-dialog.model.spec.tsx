@@ -72,10 +72,6 @@ describe('useContractFormDialogModel', () => {
     expect(contractService.update).not.toHaveBeenCalled();
   });
 
-  // Cobre o fix da revisão de frontend: editar um contrato com itens
-  // adicionados, editados e removidos ao mesmo tempo precisa virar uma
-  // única chamada a contractService.update (payload composto), não mais um
-  // loop de deleteItem/updateItem/addItem por item alterado.
   it('edita contrato + itens (add/editar/remover) numa única chamada a update', async () => {
     vi.mocked(contractService.update).mockResolvedValue(contract);
 
@@ -107,10 +103,6 @@ describe('useContractFormDialogModel', () => {
     expect(contractService.create).not.toHaveBeenCalled();
   });
 
-  // Sem isso, reabrir o dialog do mesmo contrato numa segunda edição (sem
-  // reload de página) mostraria os itens de quando o form montou pela
-  // primeira vez, não os itens atuais — e salvar sem perceber reverteria
-  // silenciosamente a edição anterior.
   it('ao reabrir o dialog, reseta o form pros dados atuais do contrato (não os do mount inicial)', () => {
     const { result, rerender } = renderHook(
       ({ contract }: { contract: Contract }) => useContractFormDialogModel({ contract }),
@@ -121,7 +113,13 @@ describe('useContractFormDialogModel', () => {
       ...contract,
       value: 800,
       items: [
-        { id: 'item-1', description: 'Consultoria (revisada)', quantity: 4, unitValue: 200, subtotal: 800 },
+        {
+          id: 'item-1',
+          description: 'Consultoria (revisada)',
+          quantity: 4,
+          unitValue: 200,
+          subtotal: 800,
+        },
       ],
     };
     rerender({ contract: updatedContract });

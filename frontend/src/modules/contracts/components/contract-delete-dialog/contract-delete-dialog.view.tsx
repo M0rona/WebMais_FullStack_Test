@@ -14,7 +14,7 @@ import {
 import type { ContractDeleteDialogModel } from './contract-delete-dialog.model';
 
 type ContractDeleteDialogViewProps = ContractDeleteDialogModel & {
-  trigger: ReactNode; // só o gatilho visual, não precisa passar pelo model
+  trigger: ReactNode;
 };
 
 export const ContractDeleteDialogView = ({ trigger, onConfirm }: ContractDeleteDialogViewProps) => {

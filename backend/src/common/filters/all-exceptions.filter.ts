@@ -33,11 +33,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const i18n = I18nContext.current(host);
 
     const isHttpException = exception instanceof HttpException;
-    // Fecha a janela de corrida entre checagem prévia de unicidade (ex.:
-    // e-mail/documento já em uso) e o `create()`: sob concorrência, duas
-    // requisições podem passar pela checagem antes de qualquer uma escrever,
-    // e o Prisma rejeita a segunda com P2002 — sem este branch isso vira 500
-    // genérico em vez do 409 esperado pelo cliente.
     const isUniqueConstraintViolation =
       exception instanceof Prisma.PrismaClientKnownRequestError &&
       exception.code === PRISMA_UNIQUE_CONSTRAINT_CODE;

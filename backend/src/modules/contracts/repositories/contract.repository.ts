@@ -185,11 +185,6 @@ export class ContractRepository {
     });
   }
 
-  // Edição em lote de contrato + itens (usado pelo PATCH /contracts/:id
-  // quando `items` é enviado): apaga os itens removidos, atualiza os que
-  // vieram com `id` e cria os que vieram sem `id`, tudo numa única transação
-  // — evita a janela de inconsistência de fazer isso via N requisições HTTP
-  // sequenciais (delete/update/add por item) que o frontend fazia antes.
   updateWithItems(
     id: string,
     contractData: Prisma.ContractUpdateInput,

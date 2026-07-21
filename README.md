@@ -174,6 +174,16 @@ gerar o trio MVVM automaticamente).
   calculado). No volume esperado deste teste (script de seed com ~100
   registros), o custo do `OFFSET` é irrelevante, então offset pagination é a
   escolha pragmática aqui.
+- **`PATCH /contracts/:id` aceita `items` opcional e substitui a lista inteira
+  numa única transação** (`ContractRepository.updateWithItems`), em vez de o
+  cliente chamar os endpoints granulares de item (`POST`/`PATCH`/`DELETE
+  /contracts/:id/items/...`) um por um. Uma revisão pós-entrega apontou que o
+  frontend fazia exatamente isso — `update()` do contrato seguido de um loop
+  de `deleteItem`/`updateItem`/`addItem` por item alterado, várias requisições
+  HTTP independentes sem transação nem rollback: uma falha no meio do loop
+  deixava o contrato com itens parcialmente alterados. Os endpoints
+  granulares continuam existindo (API mais flexível para outros clientes),
+  mas o form de edição do frontend usa só o `PATCH` em lote.
 
 ## Uso de IA
 

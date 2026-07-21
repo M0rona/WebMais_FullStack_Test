@@ -26,9 +26,6 @@ class ContractService extends HttpService {
     return this.post<Contract>('/contracts', data);
   }
 
-  // `items` opcional: quando enviado, o backend substitui a lista de itens
-  // do contrato inteira numa única transação (ver spec 02-backend.md),
-  // evitando N requisições sequenciais de add/update/delete por item.
   update(
     id: string,
     data: {

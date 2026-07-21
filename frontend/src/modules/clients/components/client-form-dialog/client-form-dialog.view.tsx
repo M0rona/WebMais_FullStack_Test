@@ -14,7 +14,7 @@ import {
 import type { ClientFormDialogModel } from './client-form-dialog.model';
 
 type ClientFormDialogViewProps = ClientFormDialogModel & {
-  trigger: ReactNode; // só o gatilho visual, não precisa passar pelo model
+  trigger: ReactNode;
 };
 
 export const ClientFormDialogView = ({

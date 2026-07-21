@@ -42,11 +42,6 @@ export const useContractFormDialogModel = ({ contract }: ContractFormDialogProps
     void queryClient.invalidateQueries({ queryKey: ['contracts'] });
   };
 
-  // Fecha o dialog e limpa o form (valores E erros de validação). Precisa
-  // rodar tanto ao fechar manualmente (X/overlay/Escape) quanto após salvar
-  // com sucesso — sem isso, fechar o dialog depois de um Salvar com campos
-  // vazios (validação client-side, sem chegar a chamar a mutation) deixa os
-  // erros de formState.errors presos no form, que reaparecem ao reabrir.
   const closeAndReset = () => {
     setOpen(false);
     form.reset();
@@ -54,11 +49,6 @@ export const useContractFormDialogModel = ({ contract }: ContractFormDialogProps
 
   const onOpenChange = (next: boolean) => {
     if (next) {
-      // `defaultValues` do useForm só é lido no mount — sem resetar aqui, um
-      // segundo "Editar" no mesmo contrato (sem reload de página) reabriria
-      // o form com os itens de quando o dialog montou pela primeira vez, não
-      // com o que foi salvo por último. Reabrir sem perceber e salvar de
-      // novo reverteria a edição anterior silenciosamente.
       form.reset(buildDefaultValues(contract));
       setOpen(true);
     } else {
@@ -75,10 +65,6 @@ export const useContractFormDialogModel = ({ contract }: ContractFormDialogProps
         return contractService.create({ ...data, dueDate });
       }
 
-      // Contrato e itens (add/editar/remover) são enviados numa única
-      // requisição — o backend aplica tudo dentro de uma transação
-      // (ver ContractRepository.updateWithItems), então uma falha no meio
-      // do caminho nunca deixa o contrato com itens parcialmente alterados.
       return contractService.update(contract.id, {
         clientId: data.clientId,
         type: data.type,

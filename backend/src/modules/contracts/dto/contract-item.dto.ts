@@ -9,10 +9,6 @@ export const ContractItemInputSchema = z.object({
 
 export const UpdateContractItemSchema = ContractItemInputSchema.partial();
 
-// Usado no PATCH /contracts/:id (edição em lote de contrato + itens): cada
-// item da lista traz `id` quando já existe (atualiza) ou vem sem `id` quando
-// é novo (cria) — permite diffar contra os itens atuais do contrato numa
-// única transação, em vez de uma requisição HTTP por item alterado.
 export const ContractItemUpsertSchema = ContractItemInputSchema.extend({
   id: z.uuid().optional(),
 });

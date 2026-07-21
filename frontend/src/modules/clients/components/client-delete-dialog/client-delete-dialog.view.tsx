@@ -14,7 +14,7 @@ import {
 import type { ClientDeleteDialogModel } from './client-delete-dialog.model';
 
 type ClientDeleteDialogViewProps = ClientDeleteDialogModel & {
-  trigger: ReactNode; // só o gatilho visual, não precisa passar pelo model
+  trigger: ReactNode;
 };
 
 export const ClientDeleteDialogView = ({ trigger, onConfirm }: ClientDeleteDialogViewProps) => {

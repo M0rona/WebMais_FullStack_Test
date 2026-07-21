@@ -123,9 +123,6 @@ export class ContractService {
       ...(dto.dueDate && { dueDate: new Date(dto.dueDate) }),
     };
 
-    // Quando `items` vem no payload, contrato + itens são atualizados juntos
-    // numa única transação (ver ContractRepository.updateWithItems) — evita
-    // o cliente ter que fazer uma requisição HTTP por item alterado.
     const updated = dto.items
       ? await this.contractRepository.updateWithItems(id, contractData, dto.items)
       : await this.contractRepository.update(id, contractData);
@@ -240,9 +237,6 @@ export class ContractService {
     }
   }
 
-  // Simétrico à checagem de `approve()`: uma vez aprovado, o contrato não
-  // pode ficar sem itens (o value zeraria e o invariante "ACTIVE tem >=1
-  // item" quebraria). Em DRAFT ainda não há esse invariante para preservar.
   private assertCanRemoveItem(contract: ContractWithItems): void {
     if (contract.status !== ContractStatus.DRAFT && contract.items.length <= 1) {
       throw new BadRequestException(

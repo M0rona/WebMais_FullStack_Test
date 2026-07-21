@@ -14,8 +14,8 @@ import {
 import type { ContractCloseDialogModel } from './contract-close-dialog.model';
 
 type ContractCloseDialogViewProps = ContractCloseDialogModel & {
-  trigger: ReactNode; // só o gatilho visual, não precisa passar pelo model
-  contractNumber: string; // só usado na mensagem, não afeta lógica
+  trigger: ReactNode;
+  contractNumber: string;
 };
 
 export const ContractCloseDialogView = ({
