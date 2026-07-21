@@ -167,6 +167,26 @@ integrada ao processo (não só autocomplete pontual). Resumo honesto de como:
   foi encontrado inspecionando o estado da instância de i18next ao vivo no
   navegador (`i18n.services.languageUtils.toResolveHierarchy(...)`), não
   seria visível só lendo o código.
+- **Segunda rodada de ajustes pontuais**: lote de 9 correções pequenas pedidas
+  em sequência (não uma feature só) — reorganização de pastas (`i18n` saiu da
+  raiz de `src/` pra `lib/` no front e `infra/` no back; componentes shadcn
+  saíram de `components/ui/` pra `common/components/shadcn/`), conversão de
+  três componentes wrapper (`Button`, `InputField`, `NumberField`) pro trio
+  MVVM, busca de cliente e paginação (tanto no modal de seleção de cliente
+  quanto na listagem `/clients`) trocando filtro em memória por
+  `GET /clients?search=&page=` de verdade, e um script de seed com ~100
+  clientes/contratos. Feito em Plan Mode com pesquisa paralela (3 agentes
+  Explore) antes de qualquer edição. Dois achados que só apareceram
+  investigando/testando, não só lendo o pedido: o "ERROR" no log do teste do
+  `AllExceptionsFilter` não era bug (o teste lança um erro de propósito; só
+  faltava mockar o `Logger`); o "\*" de campo obrigatório aparecia longe do
+  texto por causa do `flex items-center gap-2` do `Label` do shadcn tratando
+  o asterisco como um segundo item flex, não por falta de espaço no JSX. E um
+  bug real introduzido pela própria reorganização foi pego só ao subir a
+  aplicação de verdade (não só `pnpm build`/`pnpm test`): mover
+  `src/i18n/` pra `src/infra/i18n/` no backend quebrou o boot em
+  `nest start:dev`/produção porque o `nest-cli.json` ainda apontava os
+  assets pro caminho antigo, então o `dist/` saía sem os JSONs de tradução.
 
 ## Enunciado original do desafio
 
