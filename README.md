@@ -68,20 +68,72 @@ dois projetos em todo push/PR para `main`.
 
 Ver `backend/.env.example` e `frontend/.env.example`.
 
-## Diferenciais implementados
+## Arquitetura
 
-- [x] Dockerfile da aplicação (multi-stage, além do docker-compose de infra)
-- [ ] Deploy em cloud — não feito ainda; plano em `.claude/specs/04-infra-and-delivery.md`
-- [x] Testes automatizados (backend: Jest unit + e2e; frontend: Vitest)
-- [x] Pipeline de CI (lint/typecheck/test/build no GitHub Actions)
-- [ ] RabbitMQ/Kafka no lugar do BullMQ — deliberadamente não feito: o
-      enunciado lista BullMQ como stack **obrigatória** e esse diferencial
-      como alternativa a ela, são mutuamente excludentes
-- [x] Domínio de negócio mais rico: tipo de contrato (`SERVICE`/`SUPPLY`/`LEASE`)
-      e fluxo de aprovação (`DRAFT → ACTIVE`, exige ao menos um item)
-- [x] Editar/excluir cliente (CRUD completo, não só criar/listar)
-- [x] Itens do contrato: múltiplos itens por contrato, valor total sempre
-      derivado da soma dos itens (nunca um campo editável direto)
+Organização por domínio nos dois lados, com camada de apresentação e camada
+de lógica bem separadas. Detalhe completo (specs, decisões, exemplos) em
+[`.claude/specs/`](.claude/specs/); aqui vai o resumo de como back e front
+se organizam.
+
+### Backend (NestJS): modular por domínio
+
+```
+backend/src/
+  modules/
+    clients/          # controller, service, repository, dto
+    contracts/
+    auth/
+  common/              # constants, decorators, dto, filters, guards, interceptors, mappers, types
+  infra/
+    prisma/            # PrismaModule + PrismaService
+    redis/             # RedisModule + RedisService (cache-aside)
+    queue/             # registro das filas BullMQ
+  app.module.ts
+  main.ts
+```
+
+- **Controller**: só rotas e decorators, nunca fala com Prisma/Redis direto.
+- **Service**: regra de negócio; decide cache hit/miss, enfileira jobs, lança
+  as exceptions do Nest (`NotFoundException`, `BadRequestException` etc).
+- **Repository**: única camada que importa o `PrismaService`, um método por
+  operação de acesso a dado, sem lógica de negócio dentro dele.
+- DTOs de entrada são schemas **Zod** (`createZodDto`), não `class-validator`.
+- Rotas autenticadas por padrão (guard JWT global); rota pública usa
+  `@Public()` explícito, nunca o contrário.
+
+### Frontend (Vite + React): MVVM por componente/página
+
+Cada componente ou página vive em pasta própria (kebab-case), com um trio
+fixo de arquivos:
+
+```
+client-form-dialog/
+  index.tsx                     # wiring: liga model e view, único export default
+  client-form-dialog.model.ts   # hook use<Nome>Model: estado, queries, handlers
+  client-form-dialog.view.tsx   # apresentação pura, zero chamada a service/store
+```
+
+- `index.tsx` recebe as props externas do componente, chama o hook do model
+  e repassa o resultado como props pra view.
+- `*.model.ts` concentra a lógica: TanStack Query pra estado de servidor,
+  `react-hook-form` pra formulário, `useState` pra estado de UI local.
+  Exporta o tipo de retorno via `ReturnType`, que vira a base do tipo de
+  props da view.
+- `*.view.tsx` é só JSX. Quando a view precisa de uma prop puramente visual
+  que não faz sentido passar pelo model (ex.: uma variante de estilo), o
+  tipo da view estende o do model (`ModelType & { propExtra }`) em vez de
+  duplicar o que o model já expõe.
+- Estado global de verdade (sessão autenticada) fica em **Zustand**
+  (`store/`); estado de servidor nunca é duplicado lá, é sempre TanStack
+  Query.
+- Páginas de rota em `modules/<domain>/pages/`, componentes reutilizáveis de
+  um domínio em `modules/<domain>/components/`, componentes cross-domain em
+  `common/components/`.
+
+`clients` e `contracts` seguem exatamente essa mesma estrutura dos dois
+lados, então basta olhar um módulo ou componente já existente como
+referência antes de criar um novo (há inclusive uma skill de scaffold pra
+gerar o trio MVVM automaticamente).
 
 ## Decisões técnicas
 
@@ -107,20 +159,27 @@ Ver `backend/.env.example` e `frontend/.env.example`.
 
 ## Uso de IA
 
-Todo o projeto foi desenvolvido com o **Claude Code**, de forma bem
-integrada ao processo (não só autocomplete pontual). Resumo honesto de como:
+A maior parte do código deste projeto foi escrita pelo **Claude Code**, mas
+não como "pedi e aceitei o que veio". A arquitetura, o que entrava em cada
+commit, as bibliotecas escolhidas e a revisão do resultado foram decisão
+minha o tempo todo; a IA foi a mão no teclado, guiada de perto. Em alguns
+pontos entrei direto no código também, quando era mais rápido ajustar do que
+descrever o ajuste. Resumo honesto de como foi o processo:
 
 - **Estruturação inicial**: pedi pra estruturar `.claude/` (regras em
   `CLAUDE.md`, skills de scaffold, specs de domínio/banco/backend/frontend/
   infra/testes) antes de escrever qualquer código, usando como referência de
   arquitetura outro projeto meu ([CodeHammer](https://github.com/M0rona/CodeHammer)).
-  As specs em `.claude/specs/` foram atualizadas ao longo do desenvolvimento
-  sempre que uma decisão de implementação divergiu do plano original —
-  ficaram como registro vivo das decisões, não um documento estático.
-- **Implementação**: todo o código (backend, frontend, testes, Dockerfiles,
-  CI) foi gerado pela IA, em commits pequenos e granulares, com lint,
-  typecheck e teste rodando a cada pedaço antes de cada commit — não só no
-  final.
+  Fui eu quem definiu essa referência e os padrões (módulo por domínio no
+  backend, trio MVVM no frontend); a IA formalizou em texto o que eu já tinha
+  decidido, e eu revisei regra por regra antes de aceitar. As specs em
+  `.claude/specs/` foram atualizadas ao longo do desenvolvimento sempre que
+  uma decisão de implementação divergia do plano original: ficaram como
+  registro vivo das decisões, não um documento estático.
+- **Implementação**: a maior parte do código (backend, frontend, testes,
+  Dockerfiles, CI) foi gerada pela IA sob acompanhamento direto meu, em
+  commits pequenos e granulares que eu revisava, com lint, typecheck e teste
+  rodando a cada pedaço antes de cada commit (não só no final).
 - **Decisões técnicas que exigiram investigação real**, não só geração de
   código: TypeScript foi pinado em 5.9 (não a major mais nova, 7) porque
   `typescript-eslint` e `ts-jest` ainda não suportam a 7; Prisma 7 mudou
@@ -129,9 +188,10 @@ integrada ao processo (não só autocomplete pontual). Resumo honesto de como:
   verdade contra o erro, não assumido de antemão; um bug real no `@swc/jest`
   (pânico do Rust ao compilar o client do Prisma dentro de um teste do Nest)
   levou à troca por `ts-jest`; o client gerado do Prisma precisou ficar
-  dentro de `src/` porque o build via SWC só compila esse diretório —
-  descoberto testando o boot real da aplicação compilada (`node dist/main.js`),
-  não só o `pnpm build` passando.
+  dentro de `src/` porque o build via SWC só compila esse diretório (descoberto
+  testando o boot real da aplicação compilada com `node dist/main.js`, não só
+  o `pnpm build` passando). A IA investigou e propôs cada caminho, mas qual
+  seguir foi decisão minha em cada um desses casos.
 - **Verificação real, não só "parece certo"**: os Dockerfiles foram
   efetivamente buildados e a stack completa (`docker compose --profile full up`)
   foi testada de ponta a ponta, incluindo dois bugs que só apareceram no
@@ -140,35 +200,40 @@ integrada ao processo (não só autocomplete pontual). Resumo honesto de como:
   (Chrome via automação) cobrindo o fluxo completo: login, criar contrato
   com itens (conferindo o cálculo do total em tempo real), aprovar, encerrar,
   bloqueio de exclusão de cliente com contrato vinculado, logout e proteção
-  de rota — não apenas `pnpm build` sem erro.
-- **Onde eu intervim diretamente**: pedi correções de arquitetura durante a
-  estruturação inicial (regra de extensão de tipo view/model no MVVM,
-  mover specs para dentro de `.claude/`, promover os diferenciais de
-  "bônus condicional" para escopo obrigatório) e cobrei disciplina de
-  commits pequenos por unidade lógica várias vezes ao longo da sessão.
+  de rota (não apenas `pnpm build` sem erro).
+- **Onde intervim diretamente**: pedi correções de arquitetura durante a
+  estruturação inicial (regra de extensão de tipo view/model no MVVM, mover
+  specs para dentro de `.claude/`, promover os diferenciais de "bônus
+  condicional" para escopo obrigatório), cobrei disciplina de commits
+  pequenos por unidade lógica várias vezes ao longo da sessão, e em alguns
+  pontos pontuais (ex.: um ajuste de classe Tailwind no seletor de idioma do
+  header, formatação do `tsconfig.app.json`) simplesmente editei o arquivo eu
+  mesmo em vez de pedir pra IA.
 - **Rodada de revisão pós-entrega**: depois da entrega inicial, fiz uma
-  revisão manual de código (back e front) e levantei ~40 pontos — bugs reais
+  revisão manual de código (back e front) e levantei ~40 pontos: bugs reais
   encontrados testando a UI, pedidos de reestruturação e perguntas de
   arquitetura. Antes de qualquer mudança, pedi um plano discutido e revisado
-  em conjunto (Plan Mode), executado depois em fases por múltiplos agentes em
+  em conjunto (Plan Mode) e só autorizei a execução depois de concordar com
+  ele; a execução em si rodou depois em fases por múltiplos agentes em
   paralelo (backend e reestruturação de frontend simultâneos, componentes de
   contrato depois). Cada bug relatado foi confirmado por causa raiz no
-  código antes do fix, e revalidado ao vivo no navegador depois — não só
-  "parece resolvido".
+  código antes do fix, e revalidado ao vivo no navegador depois (não só
+  "parece resolvido").
 - **i18n bilíngue (pt-BR/en)**, adicionado por último de propósito (depois da
   base estabilizada): `nestjs-i18n` no backend, `react-i18next` no frontend,
   idioma padrão pela localidade do navegador. Um bug real apareceu na
   verificação ao vivo: com `nonExplicitSupportedLngs: true`, o i18next reduz
   qualquer código pra sua parte de idioma (`pt-BR` → `pt`) antes de checar
-  contra `supportedLngs` — como minha lista usava o código completo
+  contra `supportedLngs`; como minha lista usava o código completo
   (`['pt-BR', 'en']`), `pt-BR` deixava de bater com ela mesma, zerando a
   hierarquia de resolução e fazendo todo `t()` cair no fallback (a chave
   crua) mesmo com os recursos carregados corretamente na store interna. Só
   foi encontrado inspecionando o estado da instância de i18next ao vivo no
   navegador (`i18n.services.languageUtils.toResolveHierarchy(...)`), não
   seria visível só lendo o código.
-- **Segunda rodada de ajustes pontuais**: lote de 9 correções pequenas pedidas
-  em sequência (não uma feature só) — reorganização de pastas (`i18n` saiu da
+- **Segunda rodada de ajustes pontuais**: lote de 9 correções pequenas
+  pedidas em sequência (não uma feature só), cada uma definida e priorizada
+  por mim antes de qualquer edição: reorganização de pastas (`i18n` saiu da
   raiz de `src/` pra `lib/` no front e `infra/` no back; componentes shadcn
   saíram de `components/ui/` pra `common/components/shadcn/`), conversão de
   três componentes wrapper (`Button`, `InputField`, `NumberField`) pro trio
@@ -183,10 +248,22 @@ integrada ao processo (não só autocomplete pontual). Resumo honesto de como:
   texto por causa do `flex items-center gap-2` do `Label` do shadcn tratando
   o asterisco como um segundo item flex, não por falta de espaço no JSX. E um
   bug real introduzido pela própria reorganização foi pego só ao subir a
-  aplicação de verdade (não só `pnpm build`/`pnpm test`): mover
-  `src/i18n/` pra `src/infra/i18n/` no backend quebrou o boot em
-  `nest start:dev`/produção porque o `nest-cli.json` ainda apontava os
-  assets pro caminho antigo, então o `dist/` saía sem os JSONs de tradução.
+  aplicação de verdade (não só `pnpm build`/`pnpm test`): mover `src/i18n/`
+  pra `src/infra/i18n/` no backend quebrou o boot em `nest start:dev`/produção
+  porque o `nest-cli.json` ainda apontava os assets pro caminho antigo, então
+  o `dist/` saía sem os JSONs de tradução.
+- **Terceira rodada, máscara de CPF/CNPJ no cadastro de cliente**: pedi pra
+  formatar o documento em tempo real enquanto o usuário digita, reusando a
+  mesma função de formatação já usada na listagem, tanto no cadastro quanto
+  na edição. A IA generalizou `formatDocument` pra formatar progressivamente
+  (não só em documentos completos de 11/14 dígitos) e ligou isso ao
+  formulário via `react-hook-form`, mas fui eu quem decidiu que a máscara
+  tinha que ser a mesma função da listagem (não uma nova, duplicada) e quem
+  validou ao vivo no navegador que CPF e CNPJ formatam corretamente em cada
+  estágio da digitação, e que só os dígitos (sem pontuação) chegam pra API.
+  Nessa mesma sessão também ajustei eu mesmo, sem passar pela IA, o
+  `w-[130px]` do seletor de idioma do header pra `w-32.5` (utilitário nativo
+  do Tailwind v4) e a formatação do `tsconfig.app.json`, em commit separado.
 
 ## Enunciado original do desafio
 
