@@ -20,18 +20,29 @@ import {
 import { formatDocument } from '@/common/utils/formatters';
 import type { ClientPickerDialogModel } from './client-picker-dialog.model';
 
+const SCROLL_LOAD_MORE_THRESHOLD_PX = 48;
+
 export const ClientPickerDialogView = ({
   open,
   onOpenChange,
   search,
   setSearch,
-  filteredClients,
+  clients,
   isLoading,
+  isFetchingNextPage,
+  onLoadMore,
   selectedClient,
   onSelect,
 }: ClientPickerDialogModel) => {
   const { t } = useTranslation('contracts');
   const { t: tCommon } = useTranslation('common');
+
+  const onScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = event.currentTarget;
+    if (scrollTop + clientHeight >= scrollHeight - SCROLL_LOAD_MORE_THRESHOLD_PX) {
+      onLoadMore();
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -55,7 +66,7 @@ export const ClientPickerDialogView = ({
               autoFocus
             />
           </div>
-          <div className="max-h-[50vh] overflow-y-auto rounded-md border">
+          <div className="max-h-[50vh] overflow-y-auto rounded-md border" onScroll={onScroll}>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -70,23 +81,35 @@ export const ClientPickerDialogView = ({
                       {tCommon('table.loading')}
                     </TableCell>
                   </TableRow>
-                ) : filteredClients.length === 0 ? (
+                ) : clients.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={2} className="text-center text-sm text-muted-foreground">
                       {t('clientPicker.empty')}
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredClients.map((client) => (
-                    <TableRow
-                      key={client.id}
-                      className="cursor-pointer"
-                      onClick={() => onSelect(client.id)}
-                    >
-                      <TableCell>{client.name}</TableCell>
-                      <TableCell>{formatDocument(client.document)}</TableCell>
-                    </TableRow>
-                  ))
+                  <>
+                    {clients.map((client) => (
+                      <TableRow
+                        key={client.id}
+                        className="cursor-pointer"
+                        onClick={() => onSelect(client.id)}
+                      >
+                        <TableCell>{client.name}</TableCell>
+                        <TableCell>{formatDocument(client.document)}</TableCell>
+                      </TableRow>
+                    ))}
+                    {isFetchingNextPage && (
+                      <TableRow>
+                        <TableCell
+                          colSpan={2}
+                          className="text-center text-sm text-muted-foreground"
+                        >
+                          {tCommon('table.loading')}
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </>
                 )}
               </TableBody>
             </Table>

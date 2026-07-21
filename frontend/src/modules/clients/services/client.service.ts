@@ -1,10 +1,21 @@
 import { HttpService } from '@/common/services/http.service';
 import type { Client } from '@/common/types/client.type';
+import type { PaginatedResponse } from '@/common/types/paginated-response.type';
 import type { ClientFormData } from '@/modules/clients/schemas/client.schema';
 
+interface ListClientsParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+}
+
 class ClientService extends HttpService {
-  findAll(): Promise<Client[]> {
-    return this.get<Client[]>('/clients');
+  findAll(params?: ListClientsParams): Promise<PaginatedResponse<Client>> {
+    return this.get<PaginatedResponse<Client>>('/clients', { params });
+  }
+
+  findOne(id: string): Promise<Client> {
+    return this.get<Client>(`/clients/${id}`);
   }
 
   create(data: ClientFormData): Promise<Client> {
