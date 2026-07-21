@@ -1,13 +1,13 @@
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/common/components/shadcn/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/common/components/shadcn/select';
 import { cn } from '@/lib/utils';
 import type { HeaderModel } from './header.model';
 

@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from '@/common/components/shadcn/dialog';
 import type { ClientFormDialogModel } from './client-form-dialog.model';
 
 type ClientFormDialogViewProps = ClientFormDialogModel & {

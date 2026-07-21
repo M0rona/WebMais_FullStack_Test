@@ -21,5 +21,8 @@ export default tseslint.config(
       '@typescript-eslint/no-explicit-any': 'error',
     },
   },
-  { files: ['src/components/ui/**/*.tsx'], rules: { 'react-refresh/only-export-components': 'off' } },
+  {
+    files: ['src/common/components/shadcn/**/*.tsx'],
+    rules: { 'react-refresh/only-export-components': 'off' },
+  },
 );

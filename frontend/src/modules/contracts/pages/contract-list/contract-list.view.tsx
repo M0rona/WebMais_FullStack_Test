@@ -1,16 +1,16 @@
 import { Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/common/components/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/common/components/shadcn/card';
+import { Input } from '@/common/components/shadcn/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Skeleton } from '@/components/ui/skeleton';
+} from '@/common/components/shadcn/select';
+import { Skeleton } from '@/common/components/shadcn/skeleton';
 import {
   Table,
   TableBody,
@@ -18,7 +18,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from '@/common/components/shadcn/table';
 import type { ContractStatus, ContractType } from '@/common/types/contract.type';
 import { formatCurrency, formatDate } from '@/common/utils/formatters';
 import { useContractStatusLabels, useContractTypeLabels } from '../../hooks/use-contract-labels';

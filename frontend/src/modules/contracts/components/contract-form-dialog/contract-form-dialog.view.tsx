@@ -11,15 +11,15 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
+} from '@/common/components/shadcn/dialog';
+import { Label } from '@/common/components/shadcn/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/common/components/shadcn/select';
 import { useContractTypeLabels } from '../../hooks/use-contract-labels';
 import ClientPickerDialog from '../client-picker-dialog';
 import ContractItemList from '../contract-item-list';

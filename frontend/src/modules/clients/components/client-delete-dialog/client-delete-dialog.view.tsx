@@ -10,7 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+} from '@/common/components/shadcn/alert-dialog';
 import type { ClientDeleteDialogModel } from './client-delete-dialog.model';
 
 type ClientDeleteDialogViewProps = ClientDeleteDialogModel & {

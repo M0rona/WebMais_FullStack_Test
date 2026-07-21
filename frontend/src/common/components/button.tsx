@@ -1,6 +1,6 @@
 import type { ComponentProps } from 'react';
 import { Loader2 } from 'lucide-react';
-import { Button as ShadcnButton } from '@/components/ui/button';
+import { Button as ShadcnButton } from '@/common/components/shadcn/button';
 
 export interface ButtonProps extends ComponentProps<typeof ShadcnButton> {
   loading?: boolean;

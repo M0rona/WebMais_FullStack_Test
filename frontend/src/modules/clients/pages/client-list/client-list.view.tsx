@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/common/components/shadcn/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/common/components/shadcn/card';
+import { Skeleton } from '@/common/components/shadcn/skeleton';
 import {
   Table,
   TableBody,
@@ -9,7 +9,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from '@/common/components/shadcn/table';
 import { formatDocument } from '@/common/utils/formatters';
 import ClientDeleteDialog from '../../components/client-delete-dialog';
 import ClientFormDialog from '../../components/client-form-dialog';

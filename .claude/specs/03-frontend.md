@@ -104,8 +104,11 @@ acabamento visual via shadcn.
 
 Inicializar com `npx shadcn@latest init` (style `new-york`, base color
 `neutral`, `cssVariables: true`, alias `@/*` apontando para `src/*`, igual ao
-`components.json` do CodeHammer). Componentes esperados, adicionar sob
-demanda com `npx shadcn@latest add <nome>`:
+`components.json` do CodeHammer) — com o alias `ui` de `components.json`
+apontando para `@/common/components/shadcn` (não o default
+`@/components/ui`), pra manter os componentes gerados dentro de
+`common/components/`. Componentes esperados, adicionar sob demanda com
+`npx shadcn@latest add <nome>`:
 
 `button`, `input`, `label`, `card`, `table`, `dialog`, `alert-dialog`,
 `select`, `badge`, `form`, `sonner`, `skeleton` (loading), `alert` (estado de

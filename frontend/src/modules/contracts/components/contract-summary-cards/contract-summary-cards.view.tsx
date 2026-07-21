@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardContent, CardHeader, CardTitle } from '@/common/components/shadcn/card';
+import { Skeleton } from '@/common/components/shadcn/skeleton';
 import type { ContractStatus } from '@/common/types/contract.type';
 import { cn } from '@/lib/utils';
 import type { ContractSummaryCardsModel } from './contract-summary-cards.model';

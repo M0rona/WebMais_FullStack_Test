@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/common/components/button';
 import { InputField } from '@/common/components/input-field';
 import { translateError } from '@/common/utils/translate-error';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/common/components/shadcn/card';
 import type { RegisterModel } from './register.model';
 
 export const RegisterView = ({ form, onSubmit, isSubmitting }: RegisterModel) => {

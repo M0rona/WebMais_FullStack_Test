@@ -1,6 +1,6 @@
 import { Controller, type Control, type FieldValues, type Path } from 'react-hook-form';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Input } from '@/common/components/shadcn/input';
+import { Label } from '@/common/components/shadcn/label';
 import { cn } from '@/lib/utils';
 
 export interface NumberFieldProps<TFieldValues extends FieldValues> {
@@ -11,6 +11,7 @@ export interface NumberFieldProps<TFieldValues extends FieldValues> {
   error?: string;
   placeholder?: string;
   id?: string;
+  className?: string;
 }
 
 // Aceita vírgula OU ponto como separador decimal (comum digitar "1500,50" em
@@ -39,11 +40,12 @@ export const NumberField = <TFieldValues extends FieldValues>({
   error,
   placeholder,
   id,
+  className,
 }: NumberFieldProps<TFieldValues>) => {
   const inputId = id ?? name;
 
   return (
-    <div className="space-y-2">
+    <div className={cn('space-y-2', className)}>
       <Label htmlFor={inputId} className={cn(error && 'text-destructive')}>
         {label}
         {required && <span className="text-destructive">*</span>}

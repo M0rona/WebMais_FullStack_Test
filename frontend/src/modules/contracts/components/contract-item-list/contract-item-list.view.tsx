@@ -5,7 +5,7 @@ import { Button } from '@/common/components/button';
 import { InputField } from '@/common/components/input-field';
 import { NumberField } from '@/common/components/number-field';
 import { translateError } from '@/common/utils/translate-error';
-import { Label } from '@/components/ui/label';
+import { Label } from '@/common/components/shadcn/label';
 import { formatCurrency } from '@/common/utils/formatters';
 import type { ContractFormData } from '@/modules/contracts/schemas/contract.schema';
 import type { ContractItemListModel } from './contract-item-list.model';
@@ -57,7 +57,7 @@ export const ContractItemListView = ({
                 {...register(`items.${index}.description`)}
               />
 
-              <div className="grid grid-cols-4 gap-2">
+              <div className="flex gap-2">
                 <NumberField
                   control={control}
                   name={`items.${index}.quantity`}
@@ -65,6 +65,7 @@ export const ContractItemListView = ({
                   required
                   placeholder="0"
                   error={translateError(t, errors?.[index]?.quantity?.message)}
+                  className="flex-1"
                 />
                 <NumberField
                   control={control}
@@ -73,7 +74,11 @@ export const ContractItemListView = ({
                   required
                   placeholder="0,00"
                   error={translateError(t, errors?.[index]?.unitValue?.message)}
+                  className="flex-1"
                 />
+              </div>
+
+              <div className="flex justify-between gap-2">
                 <div className="space-y-2">
                   <Label>{t('items.total')}</Label>
                   <div className="flex h-8 items-center text-sm text-muted-foreground">
@@ -84,7 +89,7 @@ export const ContractItemListView = ({
                   <Label className="invisible">{t('items.actions')}</Label>
                   <Button
                     type="button"
-                    variant="ghost"
+                    variant="destructive"
                     size="icon"
                     onClick={() => onRemoveItem(index)}
                     disabled={fields.length === 1}

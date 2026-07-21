@@ -10,7 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+} from '@/common/components/shadcn/alert-dialog';
 import type { ContractCloseDialogModel } from './contract-close-dialog.model';
 
 type ContractCloseDialogViewProps = ContractCloseDialogModel & {

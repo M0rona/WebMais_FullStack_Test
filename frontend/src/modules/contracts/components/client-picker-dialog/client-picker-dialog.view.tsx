@@ -7,8 +7,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
+} from '@/common/components/shadcn/dialog';
+import { Input } from '@/common/components/shadcn/input';
 import {
   Table,
   TableBody,
@@ -16,7 +16,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from '@/common/components/shadcn/table';
 import { formatDocument } from '@/common/utils/formatters';
 import type { ClientPickerDialogModel } from './client-picker-dialog.model';
 

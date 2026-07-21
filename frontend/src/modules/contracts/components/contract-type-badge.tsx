@@ -1,4 +1,4 @@
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/common/components/shadcn/badge';
 import type { ContractType } from '@/common/types/contract.type';
 import { useContractTypeLabels } from '@/modules/contracts/hooks/use-contract-labels';
 
