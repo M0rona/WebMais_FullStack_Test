@@ -156,6 +156,24 @@ gerar o trio MVVM automaticamente).
   escrever, gerando números duplicados. A sequence é criada manualmente na
   migration inicial (`CREATE SEQUENCE "contract_number_seq" START 1;`), já
   que não existe um jeito idiomático de declarar isso no `schema.prisma`.
+- **Swagger não foi adicionado**: decisão consciente, não esquecimento. O
+  enunciado do teste não pede documentação de API formal, e os critérios de
+  avaliação (Clean Code, modelagem, uso de Postgres/Redis/BullMQ, testes,
+  Git) não dependem disso — adicionar `@nestjs/swagger` aqui entraria na
+  categoria de dependência/config que o escopo não pediu, o mesmo raciocínio
+  usado para descartar RBAC e RabbitMQ/Kafka (ver
+  `.claude/specs/00-overview.md`).
+- **Paginação por offset (`page`/`limit`), não por cursor**: `GET /contracts`
+  e `GET /clients` paginam com `skip`/`take` clássico, não com cursor
+  (`WHERE id > :cursor`). Cursor pagination evita o custo O(n) do `OFFSET`
+  em tabelas grandes e não sofre deslocamento de página quando um registro é
+  inserido/removido durante a navegação — seria a escolha certa em escala de
+  produção real, especialmente para scroll infinito. Mas cursor não permite
+  "ir direto pra página N" nem contagem total barata, que é exatamente o que
+  a listagem atual usa (tabela com número de páginas, `totalPages`
+  calculado). No volume esperado deste teste (script de seed com ~100
+  registros), o custo do `OFFSET` é irrelevante, então offset pagination é a
+  escolha pragmática aqui.
 
 ## Uso de IA
 
