@@ -1,5 +1,6 @@
 import { ArgumentsHost, BadRequestException, Logger, NotFoundException } from '@nestjs/common';
 import { ZodValidationException } from 'nestjs-zod';
+import { Prisma } from '../../infra/prisma/prisma-client';
 import { AllExceptionsFilter } from './all-exceptions.filter';
 
 describe('AllExceptionsFilter', () => {
@@ -70,6 +71,21 @@ describe('AllExceptionsFilter', () => {
     new AllExceptionsFilter().catch(new BadRequestException(['a', 'b']), buildHost());
 
     expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({ message: ['a', 'b'] }));
+  });
+
+  it('P2002 do Prisma (constraint única) vira 409 traduzido em vez de 500 genérico', () => {
+    request.i18nContext = { t: (key: string) => `traduzido:${key}` };
+    const exception = new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
+      code: 'P2002',
+      clientVersion: '7.8.0',
+    });
+
+    new AllExceptionsFilter().catch(exception, buildHost());
+
+    expect(statusMock).toHaveBeenCalledWith(409);
+    expect(jsonMock).toHaveBeenCalledWith(
+      expect.objectContaining({ message: 'traduzido:common.errors.conflict' }),
+    );
   });
 
   it('erro não-HTTP vira 500 traduzido quando há i18nContext', () => {

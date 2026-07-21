@@ -10,6 +10,9 @@ import { Request, Response } from 'express';
 import { I18nContext } from 'nestjs-i18n';
 import { ZodValidationException } from 'nestjs-zod';
 import type { ZodIssue } from 'zod';
+import { Prisma } from '../../infra/prisma/prisma-client';
+
+const PRISMA_UNIQUE_CONSTRAINT_CODE = 'P2002';
 
 interface ErrorResponseBody {
   statusCode: number;
@@ -30,20 +33,33 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const i18n = I18nContext.current(host);
 
     const isHttpException = exception instanceof HttpException;
-    const status: number = isHttpException
-      ? exception.getStatus()
-      : HttpStatus.INTERNAL_SERVER_ERROR;
+    // Fecha a janela de corrida entre checagem prévia de unicidade (ex.:
+    // e-mail/documento já em uso) e o `create()`: sob concorrência, duas
+    // requisições podem passar pela checagem antes de qualquer uma escrever,
+    // e o Prisma rejeita a segunda com P2002 — sem este branch isso vira 500
+    // genérico em vez do 409 esperado pelo cliente.
+    const isUniqueConstraintViolation =
+      exception instanceof Prisma.PrismaClientKnownRequestError &&
+      exception.code === PRISMA_UNIQUE_CONSTRAINT_CODE;
+
+    const status: number = isUniqueConstraintViolation
+      ? HttpStatus.CONFLICT
+      : isHttpException
+        ? exception.getStatus()
+        : HttpStatus.INTERNAL_SERVER_ERROR;
 
     let message: string | string[];
     if (exception instanceof ZodValidationException) {
       message = this.translateZodIssues(exception, i18n);
+    } else if (isUniqueConstraintViolation) {
+      message = i18n?.t('common.errors.conflict') ?? 'Registro duplicado';
     } else if (isHttpException) {
       message = this.extractMessage(exception);
     } else {
       message = i18n?.t('common.errors.internal') ?? 'Erro interno do servidor';
     }
 
-    if (!isHttpException || status >= 500) {
+    if ((!isHttpException && !isUniqueConstraintViolation) || status >= 500) {
       this.logger.error(
         `${request.method} ${request.url} - ${status}`,
         exception instanceof Error ? exception.stack : String(exception),

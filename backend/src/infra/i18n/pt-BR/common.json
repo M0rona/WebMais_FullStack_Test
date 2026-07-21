@@ -1,5 +1,6 @@
 {
   "errors": {
-    "internal": "Erro interno do servidor"
+    "internal": "Erro interno do servidor",
+    "conflict": "Registro duplicado"
   }
 }

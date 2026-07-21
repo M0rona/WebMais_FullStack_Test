@@ -1,5 +1,6 @@
 {
   "errors": {
-    "internal": "Internal server error"
+    "internal": "Internal server error",
+    "conflict": "Duplicate record"
   }
 }
