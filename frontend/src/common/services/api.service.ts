@@ -2,6 +2,7 @@ import axios, { type AxiosError } from 'axios';
 import { toast } from 'sonner';
 import { getErrorMessage } from '@/common/utils/error-handler';
 import i18next from '@/lib/i18n';
+import { queryClient } from '@/lib/query-client';
 import { useAuthStore } from '@/store/auth-store';
 
 export const api = axios.create({
@@ -22,6 +23,7 @@ api.interceptors.response.use(
   (error: AxiosError) => {
     if (error.response?.status === 401) {
       useAuthStore.getState().clearAuth();
+      queryClient.clear();
       toast.error(i18next.t('common:errors.sessionExpired'));
       window.location.href = '/login';
       return Promise.reject(error);
