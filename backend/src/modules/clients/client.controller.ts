@@ -8,10 +8,11 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
-import { ClientService } from './client.service';
+import { ClientService, PaginatedClientsDto } from './client.service';
 import { ClientResponseDto } from '../../common/mappers/client.mapper';
-import { CreateClientDto, UpdateClientDto } from './dto/client.dto';
+import { CreateClientDto, ListClientsQueryDto, UpdateClientDto } from './dto/client.dto';
 
 @Controller('clients')
 export class ClientController {
@@ -23,8 +24,8 @@ export class ClientController {
   }
 
   @Get()
-  findAll(): Promise<ClientResponseDto[]> {
-    return this.clientService.findAll();
+  findAll(@Query() query: ListClientsQueryDto): Promise<PaginatedClientsDto> {
+    return this.clientService.findAll(query);
   }
 
   @Get(':id')

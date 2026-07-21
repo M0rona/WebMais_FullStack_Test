@@ -1,6 +1,13 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '../../../infra/prisma/prisma-client';
 import { PrismaService } from '../../../infra/prisma/prisma.service';
 import { CreateClientDtoType, UpdateClientDtoType } from '../dto/client.dto';
+
+interface FindManyFilters {
+  search?: string;
+  page: number;
+  limit: number;
+}
 
 @Injectable()
 export class ClientRepository {
@@ -10,8 +17,29 @@ export class ClientRepository {
     return this.prisma.client.create({ data });
   }
 
-  findMany() {
-    return this.prisma.client.findMany({ orderBy: { name: 'asc' } });
+  async findMany(filters: FindManyFilters) {
+    const { page, limit, search } = filters;
+    const skip = (page - 1) * limit;
+    const where: Prisma.ClientWhereInput = {
+      ...(search && {
+        OR: [
+          { name: { contains: search, mode: 'insensitive' } },
+          { document: { contains: search, mode: 'insensitive' } },
+        ],
+      }),
+    };
+
+    const [data, total] = await Promise.all([
+      this.prisma.client.findMany({
+        where,
+        orderBy: { name: 'asc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.client.count({ where }),
+    ]);
+
+    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
   findOne(id: string) {

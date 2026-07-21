@@ -41,7 +41,9 @@ CRUD completo:
 
 - `POST /clients` — cria cliente (`name`, `document` validado com dígito
   verificador de CPF/CNPJ no Zod schema).
-- `GET /clients` — lista clientes (usado no select do form de contrato).
+- `GET /clients` — lista clientes com busca opcional (`search`, casa
+  `name`/`document`) e paginação (`page`/`limit`), mesmo formato de resposta
+  paginada usado em `GET /contracts`.
 - `GET /clients/:id` — detalhe.
 - `PATCH /clients/:id` — edita `name`/`document`.
 - `DELETE /clients/:id` — remove cliente. O service verifica proativamente

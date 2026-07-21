@@ -7,8 +7,16 @@ import {
 import { Client } from '../../infra/prisma/prisma-client';
 import { ClientMapper, ClientResponseDto } from '../../common/mappers/client.mapper';
 import { translate } from '../../common/utils/i18n.util';
-import { CreateClientDtoType, UpdateClientDtoType } from './dto/client.dto';
+import { CreateClientDtoType, ListClientsQueryType, UpdateClientDtoType } from './dto/client.dto';
 import { ClientRepository } from './repositories/client.repository';
+
+export interface PaginatedClientsDto {
+  data: ClientResponseDto[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
 
 @Injectable()
 export class ClientService {
@@ -20,9 +28,15 @@ export class ClientService {
     return ClientMapper.toResponse(client);
   }
 
-  async findAll(): Promise<ClientResponseDto[]> {
-    const clients = await this.clientRepository.findMany();
-    return ClientMapper.toResponseList(clients);
+  async findAll(query: ListClientsQueryType): Promise<PaginatedClientsDto> {
+    const result = await this.clientRepository.findMany(query);
+    return {
+      data: ClientMapper.toResponseList(result.data),
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+      totalPages: result.totalPages,
+    };
   }
 
   async findOne(id: string): Promise<ClientResponseDto> {
