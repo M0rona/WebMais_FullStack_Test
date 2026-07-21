@@ -14,6 +14,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
             host: redisUrl.hostname,
             port: Number(redisUrl.port) || 6379,
             password: redisUrl.password || undefined,
+            ...(redisUrl.protocol === 'rediss:' && { tls: {} }),
             // BullMQ exige maxRetriesPerRequest: null nas conexões usadas por Worker/blocking commands.
             maxRetriesPerRequest: null,
           },
