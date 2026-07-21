@@ -45,7 +45,7 @@ export const HeaderView = ({ userName, onLogout, language, onLanguageChange }: H
         </div>
         <div className="flex items-center gap-4">
           <Select value={language} onValueChange={onLanguageChange}>
-            <SelectTrigger className="w-[130px]" aria-label={t('language.label')}>
+            <SelectTrigger className="w-32.5" aria-label={t('language.label')}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
