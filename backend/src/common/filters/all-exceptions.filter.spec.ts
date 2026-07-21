@@ -1,4 +1,4 @@
-import { ArgumentsHost, BadRequestException, NotFoundException } from '@nestjs/common';
+import { ArgumentsHost, BadRequestException, Logger, NotFoundException } from '@nestjs/common';
 import { ZodValidationException } from 'nestjs-zod';
 import { AllExceptionsFilter } from './all-exceptions.filter';
 
@@ -16,6 +16,10 @@ describe('AllExceptionsFilter', () => {
         getRequest: () => request,
       }),
     }) as unknown as ArgumentsHost;
+
+  // Erros 5xx são logados de propósito pelo filtro; silenciamos aqui pra não
+  // poluir o output do test runner com um "ERROR" que não indica falha real.
+  jest.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
 
   beforeEach(() => {
     jest.clearAllMocks();
