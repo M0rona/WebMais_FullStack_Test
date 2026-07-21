@@ -9,6 +9,8 @@ export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
 });
 
+const PUBLIC_AUTH_PATHS = ['/auth/login', '/auth/register'];
+
 api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().token;
   if (token) {
@@ -21,7 +23,9 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    if (error.response?.status === 401) {
+    const isPublicAuthRequest = PUBLIC_AUTH_PATHS.some((path) => error.config?.url?.includes(path));
+
+    if (error.response?.status === 401 && !isPublicAuthRequest) {
       useAuthStore.getState().clearAuth();
       queryClient.clear();
       toast.error(i18next.t('common:errors.sessionExpired'));
