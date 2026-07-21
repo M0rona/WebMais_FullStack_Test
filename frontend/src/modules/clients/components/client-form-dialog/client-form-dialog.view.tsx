@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/common/components/button';
-import { InputField } from '@/common/components/input-field';
+import Button from '@/common/components/button';
+import InputField from '@/common/components/input-field';
 import { translateError } from '@/common/utils/translate-error';
 import {
   Dialog,

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Button } from '@/common/components/button';
-import { InputField } from '@/common/components/input-field';
+import Button from '@/common/components/button';
+import InputField from '@/common/components/input-field';
 import { translateError } from '@/common/utils/translate-error';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/common/components/shadcn/card';
 import type { LoginModel } from './login.model';

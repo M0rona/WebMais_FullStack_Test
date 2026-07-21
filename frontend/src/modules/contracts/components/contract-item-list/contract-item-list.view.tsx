@@ -1,9 +1,9 @@
 import { Trash2 } from 'lucide-react';
 import type { Control, FieldErrors, UseFormRegister } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/common/components/button';
-import { InputField } from '@/common/components/input-field';
-import { NumberField } from '@/common/components/number-field';
+import Button from '@/common/components/button';
+import InputField from '@/common/components/input-field';
+import NumberField from '@/common/components/number-field';
 import { translateError } from '@/common/utils/translate-error';
 import { Label } from '@/common/components/shadcn/label';
 import { formatCurrency } from '@/common/utils/formatters';

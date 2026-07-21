@@ -1,6 +1,6 @@
 import { Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/common/components/button';
+import Button from '@/common/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/common/components/shadcn/card';
 import { Input } from '@/common/components/shadcn/input';
 import {

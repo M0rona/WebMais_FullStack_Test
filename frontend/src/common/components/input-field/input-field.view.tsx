@@ -1,36 +1,30 @@
-import type { ComponentProps } from 'react';
 import { Input } from '@/common/components/shadcn/input';
 import { Label } from '@/common/components/shadcn/label';
 import { cn } from '@/lib/utils';
+import type { InputFieldModel } from './input-field.model';
 
-export interface InputFieldProps extends ComponentProps<typeof Input> {
-  label: string;
-  required?: boolean;
-  error?: string;
-}
-
-export const InputField = ({
+export const InputFieldView = ({
   label,
   required,
   error,
-  id,
+  inputId,
   name,
   className,
-  ...props
-}: InputFieldProps) => {
-  const inputId = id ?? name;
-
+  rest,
+}: InputFieldModel) => {
   return (
     <div className="space-y-2">
       <Label htmlFor={inputId} className={cn(error && 'text-destructive')}>
-        {label}
-        {required && <span className="text-destructive">*</span>}
+        <span>
+          {label}
+          {required && <span className="text-destructive"> *</span>}
+        </span>
       </Label>
       <Input
         id={inputId}
         name={name}
         className={cn(error && 'border-destructive focus-visible:ring-destructive', className)}
-        {...props}
+        {...rest}
       />
       {error && <p className="text-sm text-destructive">{error}</p>}
     </div>
