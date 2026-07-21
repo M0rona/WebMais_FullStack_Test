@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import type { Client } from '@/common/types/client.type';
 import { formatDocument } from '@/common/utils/formatters';
-import { getErrorMessage } from '@/common/utils/error-handler';
 import { clientSchema, type ClientFormData } from '@/modules/clients/schemas/client.schema';
 import { clientService } from '../../services/client.service';
 
@@ -43,9 +42,6 @@ export const useClientFormDialogModel = ({ client }: ClientFormDialogProps) => {
       void queryClient.invalidateQueries({ queryKey: ['clients'] });
       setOpen(false);
       form.reset();
-    },
-    onError: (error) => {
-      toast.error(getErrorMessage(error));
     },
   });
 

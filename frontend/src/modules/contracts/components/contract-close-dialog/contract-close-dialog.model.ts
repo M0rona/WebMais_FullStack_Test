@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { getErrorMessage } from '@/common/utils/error-handler';
 import { contractService } from '../../services/contract.service';
 
 interface ContractCloseDialogProps {
@@ -17,9 +16,6 @@ export const useContractCloseDialogModel = ({ contractId }: ContractCloseDialogP
     mutationFn: () => contractService.close(contractId),
     onSuccess: () => {
       toast.success(t('toasts.closed'));
-    },
-    onError: (error) => {
-      toast.error(getErrorMessage(error));
     },
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: ['contracts'] });

@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import type { ContractStatus, ContractType } from '@/common/types/contract.type';
-import { getErrorMessage } from '@/common/utils/error-handler';
 import { contractService } from '../../services/contract.service';
 
 const PAGE_LIMIT = 10;
@@ -49,7 +48,6 @@ export const useContractListModel = () => {
     onSuccess: () => {
       toast.success(t('toasts.approved'));
     },
-    onError: (error) => toast.error(getErrorMessage(error)),
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: ['contracts'] });
     },

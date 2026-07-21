@@ -2,8 +2,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-import { getErrorMessage } from '@/common/utils/error-handler';
 import { registerSchema, type RegisterFormData } from '@/modules/auth/schemas/register.schema';
 import { authService } from '@/modules/auth/services/auth.service';
 import { useAuthStore } from '@/store/auth-store';
@@ -24,9 +22,6 @@ export const useRegisterModel = () => {
     onSuccess: (data) => {
       setAuth(data);
       navigate('/contracts');
-    },
-    onError: (error) => {
-      toast.error(getErrorMessage(error));
     },
   });
 

@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import type { Contract } from '@/common/types/contract.type';
-import { getErrorMessage } from '@/common/utils/error-handler';
 import { contractSchema, type ContractFormData } from '@/modules/contracts/schemas/contract.schema';
 import { contractService } from '../../services/contract.service';
 
@@ -76,9 +75,6 @@ export const useContractFormDialogModel = ({ contract }: ContractFormDialogProps
       toast.success(isEditing ? t('toasts.updated') : t('toasts.created'));
       invalidate();
       closeAndReset();
-    },
-    onError: (error) => {
-      toast.error(getErrorMessage(error));
     },
   });
 
