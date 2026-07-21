@@ -23,6 +23,7 @@ export const ClientFormDialogView = ({
   setOpen,
   form,
   onSubmit,
+  onDocumentChange,
   isEditing,
   isSubmitting,
 }: ClientFormDialogViewProps) => {
@@ -51,8 +52,10 @@ export const ClientFormDialogView = ({
             label={t('form.document')}
             required
             placeholder={t('form.documentPlaceholder')}
+            maxLength={18}
             error={translateError(t, errors.document?.message)}
             {...register('document')}
+            onChange={onDocumentChange}
           />
           <DialogFooter>
             <Button type="submit" loading={isSubmitting}>

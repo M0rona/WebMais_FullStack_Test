@@ -1,10 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState, type ChangeEvent } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import type { Client } from '@/common/types/client.type';
+import { formatDocument } from '@/common/utils/formatters';
 import { getErrorMessage } from '@/common/utils/error-handler';
 import { clientSchema, type ClientFormData } from '@/modules/clients/schemas/client.schema';
 import { clientService } from '../../services/client.service';
@@ -21,13 +22,22 @@ export const useClientFormDialogModel = ({ client }: ClientFormDialogProps) => {
 
   const form = useForm<ClientFormData>({
     resolver: zodResolver(clientSchema),
-    defaultValues: { name: client?.name ?? '', document: client?.document ?? '' },
+    defaultValues: {
+      name: client?.name ?? '',
+      document: client ? formatDocument(client.document) : '',
+    },
   });
+
+  const onDocumentChange = (event: ChangeEvent<HTMLInputElement>) => {
+    form.setValue('document', formatDocument(event.target.value), { shouldValidate: true });
+  };
 
   const mutation = useMutation({
     mutationKey: ['clients', isEditing ? 'update' : 'create'],
-    mutationFn: (data: ClientFormData) =>
-      isEditing ? clientService.update(client.id, data) : clientService.create(data),
+    mutationFn: (data: ClientFormData) => {
+      const payload = { ...data, document: data.document.replace(/\D/g, '') };
+      return isEditing ? clientService.update(client.id, payload) : clientService.create(payload);
+    },
     onSuccess: () => {
       toast.success(isEditing ? t('toasts.updated') : t('toasts.created'));
       void queryClient.invalidateQueries({ queryKey: ['clients'] });
@@ -41,7 +51,15 @@ export const useClientFormDialogModel = ({ client }: ClientFormDialogProps) => {
 
   const onSubmit = form.handleSubmit((data) => mutation.mutate(data));
 
-  return { open, setOpen, form, onSubmit, isEditing, isSubmitting: mutation.isPending };
+  return {
+    open,
+    setOpen,
+    form,
+    onSubmit,
+    onDocumentChange,
+    isEditing,
+    isSubmitting: mutation.isPending,
+  };
 };
 
 export type ClientFormDialogModel = ReturnType<typeof useClientFormDialogModel>;
