@@ -106,4 +106,32 @@ describe('useContractFormDialogModel', () => {
     });
     expect(contractService.create).not.toHaveBeenCalled();
   });
+
+  // Sem isso, reabrir o dialog do mesmo contrato numa segunda edição (sem
+  // reload de página) mostraria os itens de quando o form montou pela
+  // primeira vez, não os itens atuais — e salvar sem perceber reverteria
+  // silenciosamente a edição anterior.
+  it('ao reabrir o dialog, reseta o form pros dados atuais do contrato (não os do mount inicial)', () => {
+    const { result, rerender } = renderHook(
+      ({ contract }: { contract: Contract }) => useContractFormDialogModel({ contract }),
+      { wrapper, initialProps: { contract } },
+    );
+
+    const updatedContract: Contract = {
+      ...contract,
+      value: 800,
+      items: [
+        { id: 'item-1', description: 'Consultoria (revisada)', quantity: 4, unitValue: 200, subtotal: 800 },
+      ],
+    };
+    rerender({ contract: updatedContract });
+
+    act(() => {
+      result.current.onOpenChange(true);
+    });
+
+    expect(result.current.form.getValues('items')).toEqual([
+      { id: 'item-1', description: 'Consultoria (revisada)', quantity: 4, unitValue: 200 },
+    ]);
+  });
 });

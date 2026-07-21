@@ -13,6 +13,20 @@ interface ContractFormDialogProps {
   contract?: Contract;
 }
 
+function buildDefaultValues(contract?: Contract): ContractFormData {
+  return {
+    clientId: contract?.client?.id ?? '',
+    type: contract?.type ?? 'SERVICE',
+    dueDate: contract?.dueDate ? contract.dueDate.slice(0, 10) : '',
+    items: contract?.items?.map((item) => ({
+      id: item.id,
+      description: item.description,
+      quantity: item.quantity,
+      unitValue: item.unitValue,
+    })) ?? [{ description: '', quantity: 1, unitValue: 0 }],
+  };
+}
+
 export const useContractFormDialogModel = ({ contract }: ContractFormDialogProps) => {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
@@ -21,17 +35,7 @@ export const useContractFormDialogModel = ({ contract }: ContractFormDialogProps
 
   const form = useForm<ContractFormData>({
     resolver: zodResolver(contractSchema),
-    defaultValues: {
-      clientId: contract?.client?.id ?? '',
-      type: contract?.type ?? 'SERVICE',
-      dueDate: contract?.dueDate ? contract.dueDate.slice(0, 10) : '',
-      items: contract?.items?.map((item) => ({
-        id: item.id,
-        description: item.description,
-        quantity: item.quantity,
-        unitValue: item.unitValue,
-      })) ?? [{ description: '', quantity: 1, unitValue: 0 }],
-    },
+    defaultValues: buildDefaultValues(contract),
   });
 
   const invalidate = () => {
@@ -50,6 +54,12 @@ export const useContractFormDialogModel = ({ contract }: ContractFormDialogProps
 
   const onOpenChange = (next: boolean) => {
     if (next) {
+      // `defaultValues` do useForm só é lido no mount — sem resetar aqui, um
+      // segundo "Editar" no mesmo contrato (sem reload de página) reabriria
+      // o form com os itens de quando o dialog montou pela primeira vez, não
+      // com o que foi salvo por último. Reabrir sem perceber e salvar de
+      // novo reverteria a edição anterior silenciosamente.
+      form.reset(buildDefaultValues(contract));
       setOpen(true);
     } else {
       closeAndReset();
