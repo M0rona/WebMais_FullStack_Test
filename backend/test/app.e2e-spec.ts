@@ -114,6 +114,51 @@ describe('App (e2e)', () => {
     expect(response.body.status).toBe('ACTIVE');
   });
 
+  it('rejeita remover o último item de um contrato ACTIVE', async () => {
+    const detail = await request(app.getHttpServer())
+      .get(`/contracts/${contractId}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(200);
+
+    expect(detail.body.items).toHaveLength(1);
+    const lastItemId = detail.body.items[0].id as string;
+
+    await request(app.getHttpServer())
+      .delete(`/contracts/${contractId}/items/${lastItemId}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(400);
+  });
+
+  it('edita contrato e itens numa única requisição (add + update + remove)', async () => {
+    const detail = await request(app.getHttpServer())
+      .get(`/contracts/${contractId}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(200);
+
+    const existingItemId = detail.body.items[0].id as string;
+    const dueDate = new Date(Date.now() + 10 * 86_400_000).toISOString();
+
+    const response = await request(app.getHttpServer())
+      .patch(`/contracts/${contractId}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        dueDate,
+        items: [
+          {
+            id: existingItemId,
+            description: 'Consultoria (revisada)',
+            quantity: 2,
+            unitValue: 150,
+          },
+          { description: 'Item novo', quantity: 3, unitValue: 10.5 },
+        ],
+      })
+      .expect(200);
+
+    expect(response.body.items).toHaveLength(2);
+    expect(response.body.value).toBe(331.5);
+  });
+
   it('encerra o contrato e bloqueia edição depois de encerrado', async () => {
     const response = await request(app.getHttpServer())
       .post(`/contracts/${contractId}/close`)

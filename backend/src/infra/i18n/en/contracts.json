@@ -30,6 +30,7 @@
     "alreadyClosed": "Contract is already closed",
     "closedCannotBeModified": "A closed contract cannot be modified",
     "itemNotFoundInContract": "Item not found in this contract",
-    "itemNotFound": "Item not found"
+    "itemNotFound": "Item not found",
+    "lastItemCannotBeRemoved": "Cannot remove the last item of an approved contract"
   }
 }

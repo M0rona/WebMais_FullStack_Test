@@ -6,7 +6,11 @@ import {
 import { translate } from '../../../common/utils/i18n.util';
 import { ContractStatus, ContractType, Prisma } from '../../../infra/prisma/prisma-client';
 import { PrismaService } from '../../../infra/prisma/prisma.service';
-import { ContractItemInputType, UpdateContractItemDtoType } from '../dto/contract-item.dto';
+import {
+  ContractItemInputType,
+  ContractItemUpsertType,
+  UpdateContractItemDtoType,
+} from '../dto/contract-item.dto';
 
 type TransactionClient = Prisma.TransactionClient;
 
@@ -53,7 +57,7 @@ export class ContractRepository {
             description: item.description,
             quantity: item.quantity,
             unitValue: item.unitValue,
-            subtotal: item.quantity * item.unitValue,
+            subtotal: this.subtotal(item.quantity, item.unitValue),
           })),
         },
       },
@@ -143,7 +147,7 @@ export class ContractRepository {
           description: item.description,
           quantity: item.quantity,
           unitValue: item.unitValue,
-          subtotal: item.quantity * item.unitValue,
+          subtotal: this.subtotal(item.quantity, item.unitValue),
         },
       });
       return this.recalculateValue(tx, contractId);
@@ -158,8 +162,8 @@ export class ContractRepository {
           translate('contracts.errors.itemNotFound', 'Item não encontrado'),
         );
       }
-      const quantity = data.quantity ?? Number(current.quantity);
-      const unitValue = data.unitValue ?? Number(current.unitValue);
+      const quantity = data.quantity ?? current.quantity.toNumber();
+      const unitValue = data.unitValue ?? current.unitValue.toNumber();
 
       await tx.contractItem.update({
         where: { id: itemId },
@@ -167,7 +171,7 @@ export class ContractRepository {
           description: data.description ?? current.description,
           quantity,
           unitValue,
-          subtotal: quantity * unitValue,
+          subtotal: this.subtotal(quantity, unitValue),
         },
       });
       return this.recalculateValue(tx, contractId);
@@ -181,6 +185,57 @@ export class ContractRepository {
     });
   }
 
+  // Edição em lote de contrato + itens (usado pelo PATCH /contracts/:id
+  // quando `items` é enviado): apaga os itens removidos, atualiza os que
+  // vieram com `id` e cria os que vieram sem `id`, tudo numa única transação
+  // — evita a janela de inconsistência de fazer isso via N requisições HTTP
+  // sequenciais (delete/update/add por item) que o frontend fazia antes.
+  updateWithItems(
+    id: string,
+    contractData: Prisma.ContractUpdateInput,
+    items: ContractItemUpsertType[],
+  ) {
+    return this.prisma.$transaction(async (tx) => {
+      const existingItems = await tx.contractItem.findMany({ where: { contractId: id } });
+      const incomingIds = new Set(items.filter((item) => item.id).map((item) => item.id as string));
+      const idsToDelete = existingItems
+        .map((item) => item.id)
+        .filter((existingId) => !incomingIds.has(existingId));
+
+      if (idsToDelete.length > 0) {
+        await tx.contractItem.deleteMany({ where: { id: { in: idsToDelete } } });
+      }
+
+      for (const item of items) {
+        const subtotal = this.subtotal(item.quantity, item.unitValue);
+        if (item.id) {
+          await tx.contractItem.update({
+            where: { id: item.id },
+            data: {
+              description: item.description,
+              quantity: item.quantity,
+              unitValue: item.unitValue,
+              subtotal,
+            },
+          });
+        } else {
+          await tx.contractItem.create({
+            data: {
+              contractId: id,
+              description: item.description,
+              quantity: item.quantity,
+              unitValue: item.unitValue,
+              subtotal,
+            },
+          });
+        }
+      }
+
+      await tx.contract.update({ where: { id }, data: contractData });
+      return this.recalculateValue(tx, id);
+    });
+  }
+
   async expireDue(): Promise<number> {
     const result = await this.prisma.contract.updateMany({
       where: { status: ContractStatus.ACTIVE, dueDate: { lt: new Date() } },
@@ -191,7 +246,7 @@ export class ContractRepository {
 
   private async recalculateValue(tx: TransactionClient, contractId: string) {
     const items = await tx.contractItem.findMany({ where: { contractId } });
-    const value = items.reduce((sum, item) => sum + Number(item.subtotal), 0);
+    const value = items.reduce((sum, item) => sum.plus(item.subtotal), new Prisma.Decimal(0));
     return tx.contract.update({
       where: { id: contractId },
       data: { value },
@@ -199,7 +254,14 @@ export class ContractRepository {
     });
   }
 
-  private sumItems(items: ContractItemInputType[]): number {
-    return items.reduce((sum, item) => sum + item.quantity * item.unitValue, 0);
+  private subtotal(quantity: number, unitValue: number): Prisma.Decimal {
+    return new Prisma.Decimal(quantity).times(unitValue);
+  }
+
+  private sumItems(items: ContractItemInputType[]): Prisma.Decimal {
+    return items.reduce(
+      (sum, item) => sum.plus(this.subtotal(item.quantity, item.unitValue)),
+      new Prisma.Decimal(0),
+    );
   }
 }

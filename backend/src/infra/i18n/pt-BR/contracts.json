@@ -30,6 +30,7 @@
     "alreadyClosed": "Contrato já está encerrado",
     "closedCannotBeModified": "Contrato encerrado não pode ser alterado",
     "itemNotFoundInContract": "Item não encontrado neste contrato",
-    "itemNotFound": "Item não encontrado"
+    "itemNotFound": "Item não encontrado",
+    "lastItemCannotBeRemoved": "Não é possível remover o último item de um contrato aprovado"
   }
 }

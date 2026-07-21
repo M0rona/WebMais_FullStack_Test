@@ -1,7 +1,7 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 import { PaginationQuerySchema } from '../../../common/dto/pagination.dto';
-import { ContractItemInputSchema } from './contract-item.dto';
+import { ContractItemInputSchema, ContractItemUpsertSchema } from './contract-item.dto';
 
 export const ContractTypeSchema = z.enum(['SERVICE', 'SUPPLY', 'LEASE']);
 export const ContractStatusSchema = z.enum(['DRAFT', 'ACTIVE', 'EXPIRED', 'CLOSED']);
@@ -23,6 +23,7 @@ export const UpdateContractSchema = z.object({
   clientId: z.uuid('contracts.validation.client.invalid').optional(),
   type: ContractTypeSchema.optional(),
   dueDate: dueDateSchema.optional(),
+  items: z.array(ContractItemUpsertSchema).min(1, 'contracts.validation.items.min').optional(),
 });
 
 export const ListContractsQuerySchema = PaginationQuerySchema.extend({

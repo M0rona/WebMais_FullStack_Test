@@ -17,6 +17,7 @@ describe('ContractService', () => {
     countByStatus: jest.fn(),
     findOne: jest.fn(),
     update: jest.fn(),
+    updateWithItems: jest.fn(),
     delete: jest.fn(),
     approve: jest.fn(),
     close: jest.fn(),
@@ -46,6 +47,11 @@ describe('ContractService', () => {
   const closedContract = {
     id: 'c1',
     status: ContractStatus.CLOSED,
+    items: [{ id: 'item-1' }],
+  };
+  const draftContractWithItem = {
+    id: 'c1',
+    status: ContractStatus.DRAFT,
     items: [{ id: 'item-1' }],
   };
 
@@ -178,6 +184,34 @@ describe('ContractService', () => {
         BadRequestException,
       );
     });
+
+    it('sem `items` no dto, usa o update simples de campos escalares', async () => {
+      contractRepository.findOne.mockResolvedValue(activeContractWithItem);
+      contractRepository.update.mockResolvedValue({ ...activeContractWithItem, type: 'SUPPLY' });
+
+      await service.update('c1', { type: 'SUPPLY' });
+
+      expect(contractRepository.update).toHaveBeenCalledWith('c1', { type: 'SUPPLY' });
+      expect(contractRepository.updateWithItems).not.toHaveBeenCalled();
+    });
+
+    it('com `items` no dto, delega pro update atômico de itens numa única chamada', async () => {
+      contractRepository.findOne.mockResolvedValue(activeContractWithItem);
+      contractRepository.updateWithItems.mockResolvedValue(activeContractWithItem);
+      const items = [
+        { id: 'item-1', description: 'Atualizado', quantity: 2, unitValue: 50 },
+        { description: 'Novo item', quantity: 1, unitValue: 10 },
+      ];
+
+      await service.update('c1', { type: 'SUPPLY', items });
+
+      expect(contractRepository.updateWithItems).toHaveBeenCalledWith(
+        'c1',
+        { type: 'SUPPLY' },
+        items,
+      );
+      expect(contractRepository.update).not.toHaveBeenCalled();
+    });
   });
 
   describe('items', () => {
@@ -195,6 +229,22 @@ describe('ContractService', () => {
       await expect(service.updateItem('c1', 'item-inexistente', {})).rejects.toBeInstanceOf(
         NotFoundException,
       );
+    });
+
+    it('rejeita remover o último item de um contrato ACTIVE', async () => {
+      contractRepository.findOne.mockResolvedValue(activeContractWithItem);
+
+      await expect(service.deleteItem('c1', 'item-1')).rejects.toBeInstanceOf(BadRequestException);
+      expect(contractRepository.deleteItem).not.toHaveBeenCalled();
+    });
+
+    it('permite remover o último item de um contrato DRAFT', async () => {
+      contractRepository.findOne.mockResolvedValue(draftContractWithItem);
+      contractRepository.deleteItem.mockResolvedValue({ ...draftContractWithItem, items: [] });
+
+      await service.deleteItem('c1', 'item-1');
+
+      expect(contractRepository.deleteItem).toHaveBeenCalledWith('c1', 'item-1');
     });
   });
 });

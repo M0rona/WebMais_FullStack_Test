@@ -6,7 +6,7 @@ import {
 } from '../../common/constants/contract.constants';
 import { ContractMapper, ContractResponseDto } from '../../common/mappers/contract.mapper';
 import { translate } from '../../common/utils/i18n.util';
-import { ContractStatus } from '../../infra/prisma/prisma-client';
+import { ContractStatus, Prisma } from '../../infra/prisma/prisma-client';
 import { RedisService } from '../../infra/redis/redis.service';
 import { ClientService } from '../clients/client.service';
 import { ContractItemInputType, UpdateContractItemDtoType } from './dto/contract-item.dto';
@@ -117,11 +117,18 @@ export class ContractService {
       await this.clientService.findOne(dto.clientId);
     }
 
-    const updated = await this.contractRepository.update(id, {
+    const contractData: Prisma.ContractUpdateInput = {
       ...(dto.clientId && { client: { connect: { id: dto.clientId } } }),
       ...(dto.type && { type: dto.type }),
       ...(dto.dueDate && { dueDate: new Date(dto.dueDate) }),
-    });
+    };
+
+    // Quando `items` vem no payload, contrato + itens são atualizados juntos
+    // numa única transação (ver ContractRepository.updateWithItems) — evita
+    // o cliente ter que fazer uma requisição HTTP por item alterado.
+    const updated = dto.items
+      ? await this.contractRepository.updateWithItems(id, contractData, dto.items)
+      : await this.contractRepository.update(id, contractData);
 
     await this.contractCache.invalidate();
     return ContractMapper.toResponse(updated);
@@ -205,6 +212,7 @@ export class ContractService {
     const contract = await this.getOrThrow(contractId);
     this.assertNotClosed(contract.status);
     this.assertItemBelongsToContract(contract, itemId);
+    this.assertCanRemoveItem(contract);
 
     const updated = await this.contractRepository.deleteItem(contractId, itemId);
     await this.contractCache.invalidate();
@@ -227,6 +235,20 @@ export class ContractService {
         translate(
           'contracts.errors.closedCannotBeModified',
           'Contrato encerrado não pode ser alterado',
+        ),
+      );
+    }
+  }
+
+  // Simétrico à checagem de `approve()`: uma vez aprovado, o contrato não
+  // pode ficar sem itens (o value zeraria e o invariante "ACTIVE tem >=1
+  // item" quebraria). Em DRAFT ainda não há esse invariante para preservar.
+  private assertCanRemoveItem(contract: ContractWithItems): void {
+    if (contract.status !== ContractStatus.DRAFT && contract.items.length <= 1) {
+      throw new BadRequestException(
+        translate(
+          'contracts.errors.lastItemCannotBeRemoved',
+          'Não é possível remover o último item de um contrato aprovado',
         ),
       );
     }
