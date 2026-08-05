@@ -1,14 +1,18 @@
-# WebMais — Gestão de Contratos
+# Gestão de Contratos
 
 [![CI](https://github.com/M0rona/WebMais_FullStack_Test/actions/workflows/ci.yml/badge.svg)](https://github.com/M0rona/WebMais_FullStack_Test/actions/workflows/ci.yml)
 
-Módulo de gestão de contratos (cadastro de clientes, contratos com itens,
-controle de status Rascunho/Ativo/Vencido/Encerrado) desenvolvido para o
-teste técnico da WebMais. Enunciado original preservado no fim deste arquivo.
+Sistema completo de gestão de contratos: cadastro de clientes, contratos com
+múltiplos itens, fluxo de aprovação e atualização automática de status via
+fila assíncrona.
 
 **Stack:** NestJS 11 + Prisma 7 (PostgreSQL) + Redis + BullMQ no backend;
 React 19 + Vite 8 + shadcn/ui (Tailwind v4) no frontend, arquitetura MVVM.
 Detalhes de arquitetura e decisões em [`.claude/specs/`](.claude/specs/).
+
+Este projeto nasceu como um teste técnico e foi mantido público como peça
+de portfólio, mostrando meu processo do zero ao deploy. O enunciado
+original está no fim deste README.
 
 ## Deploy
 
